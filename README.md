@@ -4,14 +4,14 @@ superBrain is a full-stack web application that helps you save, organize, and se
 
 ## Features
 
-- **Save Posts** — Manually create entries or paste a URL to auto-scrape content, images, and author info
-- **URL Scraping** — Platform-specific extraction for LinkedIn, Substack (including custom domains), and generic URLs with multi-stage content cleaning
-- **Bulk Import** — Upload CSV or JSON files to import many posts at once
-- **Chrome Extension** — Save LinkedIn posts directly from your feed with one click
-- **AI Search** — Ask natural language questions about your saved content using semantic search
-- **Grid & List Views** — Toggle between card grid and compact list layouts on the dashboard
-- **Favorites** — Mark posts as favorites for quick access
-- **Platform Badges** — Color-coded badges for LinkedIn (blue), Substack (orange), and other sources
+- **Save Posts** - Manually create entries or paste a URL to auto-scrape content, images, and author info
+- **URL Scraping** - Platform-specific extraction for LinkedIn, Substack (including custom domains), and generic URLs with multi-stage content cleaning
+- **Bulk Import** - Upload CSV or JSON files to import many posts at once
+- **Chrome Extension** - Save LinkedIn and Substack posts directly from your feed with one click
+- **AI Search** - Ask natural language questions about your saved content using semantic search (this is not implemmented yet - trying to decouple the classical CRUD web app functionality in the back-end from the AI logic, which for that I will use our product in BLI called Loominus Studio)
+- **Grid & List Views** - Toggle between card grid and compact list layouts on the dashboard
+- **Favorites** - Mark posts as favorites for quick access
+- **Platform Badges** - Color-coded badges for LinkedIn (blue), Substack (orange), and other sources
 
 ## Changelog
 
