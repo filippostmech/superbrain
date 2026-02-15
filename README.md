@@ -1,6 +1,6 @@
-# ContentHub - Your LinkedIn & Substack Second Brain
+# superBrain - My LinkedIn & Substack Second Brainn
 
-ContentHub is a full-stack web application that helps you save, organize, and search your favorite LinkedIn and Substack posts using AI. Think of it as a personal knowledge base for professional content — save posts manually, scrape them from URLs, bulk import via CSV/JSON, or use the Chrome extension to save directly from LinkedIn.
+superBrain is a full-stack web application that helps you save, organize, and search your favorite LinkedIn and Substack posts using AI. Think of it as a personal knowledge base for professional content — save posts manually, scrape them from URLs, bulk import via CSV/JSON, or use the Chrome extension to save directly from LinkedIn.
 
 ## Features
 
@@ -33,7 +33,7 @@ Each entry is grouped by version number and date. The changelog data lives in `c
 - Framer Motion for animations
 - React Hook Form + Zod for form validation
 
-### Backend
+### Backendd
 - Express.js + TypeScript
 - Replit Auth (OpenID Connect) with Passport.js
 - OpenAI SDK for AI-powered search and chat
