@@ -1,0 +1,87 @@
+[
+  {
+    "date": "February 14, 2026",
+    "version": "0.5.0",
+    "entries": [
+      {
+        "category": "New",
+        "items": [
+          "Dynamic typewriter effect on landing page hero — cycles through \"LinkedIn\" and \"Substack\" to showcase multi-platform support"
+        ]
+      }
+    ]
+  },
+  {
+    "date": "February 14, 2026",
+    "version": "0.4.0",
+    "entries": [
+      {
+        "category": "New",
+        "items": [
+          "Substack support — scrape and save Substack articles and notes with platform-specific content extraction",
+          "Custom-domain Substack detection — automatically identifies Substack sites that use custom domains (e.g., lennysnewsletter.com) by inspecting page HTML",
+          "Platform-specific badge colors — LinkedIn (blue), Substack (orange), Other (gray) with dark mode support"
+        ]
+      },
+      {
+        "category": "Improved",
+        "items": [
+          "Smarter author extraction for Substack — filters out \"Substack\" as author, parses note profiles (@username format), and falls back to og:title parsing",
+          "LinkedIn content cleaning — prefers clean og:description over raw page text to prevent author bios from appearing in post content"
+        ]
+      }
+    ]
+  },
+  {
+    "date": "February 13, 2026",
+    "version": "0.3.0",
+    "entries": [
+      {
+        "category": "New",
+        "items": [
+          "Grid and list view toggle on dashboard — switch between card grid and compact list layouts",
+          "List view component with expandable content, inline metadata, and thumbnail previews"
+        ]
+      },
+      {
+        "category": "Improved",
+        "items": [
+          "Content cleaning pipeline — multi-stage processing strips author bios, social engagement metadata (likes, comments, share buttons), and normalizes whitespace",
+          "Author extraction improvements — properly parses LinkedIn og:title pipe-delimited format and uses multiple fallback strategies"
+        ]
+      }
+    ]
+  },
+  {
+    "date": "February 12, 2026",
+    "version": "0.2.0",
+    "entries": [
+      {
+        "category": "New",
+        "items": [
+          "URL auto-scraping — paste a URL and automatically extract post content, images, and author info",
+          "Scrape preview in create dialog — \"Fetch\" button fills in content, image, and author fields before saving",
+          "Bulk import — upload CSV or JSON files to import multiple posts at once",
+          "Chrome extension — save LinkedIn posts directly from your feed with one click"
+        ]
+      }
+    ]
+  },
+  {
+    "date": "February 11, 2026",
+    "version": "0.1.0",
+    "entries": [
+      {
+        "category": "New",
+        "items": [
+          "Initial release of ContentHub — your second brain for LinkedIn content",
+          "Save, organize, and search posts with AI-powered semantic search",
+          "Manual post creation with tags, author info, and URL tracking",
+          "AI search sidebar — ask natural language questions about your saved content",
+          "Favorite posts for quick access",
+          "Authentication via Replit sign-in"
+        ]
+      }
+    ]
+  }
+]

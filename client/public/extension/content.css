@@ -1,0 +1,31 @@
+.contenthub-save-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  margin-left: 4px;
+  border: 1px solid #0A66C2;
+  border-radius: 20px;
+  background: transparent;
+  color: #0A66C2;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.contenthub-save-btn:hover {
+  background: #0A66C2;
+  color: #fff;
+}
+
+.contenthub-save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.contenthub-save-btn.contenthub-saved {
+  border-color: #16a34a;
+}
