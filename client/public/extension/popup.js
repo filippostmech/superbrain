@@ -17,10 +17,10 @@ async function checkConnection() {
       statusText.textContent = `Connected as ${user.firstName || user.email || "User"}`;
       scrapeBtn.disabled = false;
     } else {
-      statusText.textContent = "Not logged in - open ContentHub first";
+      statusText.textContent = "Not logged in - open superBrain first";
     }
   } catch (e) {
-    statusText.textContent = "Cannot reach ContentHub";
+    statusText.textContent = "Cannot reach superBrain";
   }
 }
 
@@ -62,7 +62,7 @@ scrapeBtn.addEventListener("click", async () => {
     });
 
     if (res.status === 401) {
-      results.textContent = "Please log in to ContentHub first.";
+      results.textContent = "Please log in to superBrain first.";
       results.className = "results error";
     } else {
       const data = await res.json();

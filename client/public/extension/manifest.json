@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "ContentHub - LinkedIn Saver",
+  "name": "superBrain - LinkedIn Saver",
   "version": "1.0.0",
-  "description": "Save LinkedIn posts directly to your ContentHub library with one click.",
+  "description": "Save LinkedIn posts directly to your superBrain library with one click.",
   "permissions": ["activeTab"],
   "host_permissions": ["https://www.linkedin.com/*"],
   "action": {

@@ -48,7 +48,7 @@ export default function Dashboard() {
             <div className="bg-primary p-1.5 rounded-lg">
               <Bookmark className="w-4 h-4 text-white" />
             </div>
-            <span className="hidden sm:inline">ContentHub</span>
+            <span className="hidden sm:inline">superBrain</span>
           </div>
           
           <div className="h-6 w-px bg-border mx-2 hidden sm:block" />

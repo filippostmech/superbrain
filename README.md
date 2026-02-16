@@ -111,7 +111,7 @@ Located in `client/public/extension/`. To install:
 1. Open Chrome and go to `chrome://extensions/`
 2. Enable "Developer mode"
 3. Click "Load unpacked" and select the `client/public/extension/` folder
-4. The extension adds "Save to ContentHub" buttons on LinkedIn post pages
+4. The extension adds "Save to superBrain" buttons on LinkedIn post pages
 
 ## Roadmap
 

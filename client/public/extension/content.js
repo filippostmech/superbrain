@@ -1,4 +1,4 @@
-// ContentHub Chrome Extension - Content Script
+// superBrain Chrome Extension - Content Script
 // Runs on LinkedIn pages to enable saving posts
 
 (function () {
@@ -66,9 +66,9 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>
         </svg>
-        <span>Save to ContentHub</span>
+        <span>Save to superBrain</span>
       `;
-      btn.title = "Save to ContentHub";
+      btn.title = "Save to superBrain";
 
       btn.addEventListener("click", async (e) => {
         e.preventDefault();
@@ -93,7 +93,7 @@
           });
 
           if (response.status === 401) {
-            btn.innerHTML = `<span style="color:#dc2626;">Login to ContentHub first</span>`;
+            btn.innerHTML = `<span style="color:#dc2626;">Login to superBrain first</span>`;
             setTimeout(() => resetButton(btn), 3000);
             return;
           }
@@ -123,7 +123,7 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>
       </svg>
-      <span>Save to ContentHub</span>
+      <span>Save to superBrain</span>
     `;
   }
 

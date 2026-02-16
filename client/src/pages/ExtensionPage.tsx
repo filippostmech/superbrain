@@ -35,7 +35,7 @@ export default function ExtensionPage() {
     {
       icon: MousePointer,
       title: "Start Saving Posts",
-      description: 'Browse LinkedIn and click "Save to ContentHub" on any post. Or use the extension popup to import an entire page of saved posts.',
+      description: 'Browse LinkedIn and click "Save to superBrain" on any post. Or use the extension popup to import an entire page of saved posts.',
     },
   ];
 
@@ -52,7 +52,7 @@ export default function ExtensionPage() {
             <div className="bg-primary p-1.5 rounded-lg">
               <Bookmark className="w-4 h-4 text-white" />
             </div>
-            <span>ContentHub</span>
+            <span>superBrain</span>
           </div>
         </div>
       </header>
@@ -66,7 +66,7 @@ export default function ExtensionPage() {
             Chrome Extension
           </h1>
           <p className="text-muted-foreground max-w-lg mx-auto">
-            Save LinkedIn posts directly from your feed with a single click. The extension integrates seamlessly with your ContentHub account.
+            Save LinkedIn posts directly from your feed with a single click. The extension integrates seamlessly with your superBrain account.
           </p>
         </div>
 
@@ -110,7 +110,7 @@ export default function ExtensionPage() {
             <div>
               <h3 className="font-semibold text-foreground mb-1">Privacy & Security</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                The extension only activates on LinkedIn pages. It uses your existing ContentHub session for authentication - no additional passwords or API keys required. All data is sent directly to your ContentHub account and is never shared with third parties.
+                The extension only activates on LinkedIn pages. It uses your existing superBrain session for authentication - no additional passwords or API keys required. All data is sent directly to your superBrain account and is never shared with third parties.
               </p>
             </div>
           </div>

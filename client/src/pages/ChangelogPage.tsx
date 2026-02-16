@@ -43,7 +43,7 @@ export default function ChangelogPage() {
               <ArrowLeft className="w-5 h-5" />
             </Button>
           </Link>
-          <span className="text-lg font-semibold tracking-tight">ContentHub</span>
+          <span className="text-lg font-semibold tracking-tight">superBrain</span>
         </div>
       </header>
 
@@ -54,7 +54,7 @@ export default function ChangelogPage() {
           transition={{ duration: 0.4 }}
         >
           <h1 className="text-4xl font-bold tracking-tight mb-2" data-testid="text-changelog-title">Changelog</h1>
-          <p className="text-lg text-muted-foreground mb-12">Follow ContentHub updates and improvements.</p>
+          <p className="text-lg text-muted-foreground mb-12">Follow superBrain updates and improvements.</p>
         </motion.div>
 
         <div className="space-y-0">

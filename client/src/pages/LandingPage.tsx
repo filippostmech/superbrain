@@ -80,7 +80,7 @@ export default function LandingPage() {
               <div className="bg-primary p-2 rounded-lg">
                 <Bookmark className="w-6 h-6 text-white" />
               </div>
-              <span className="text-xl font-bold tracking-tight text-foreground">ContentHub</span>
+              <span className="text-xl font-bold tracking-tight text-foreground">superBrain</span>
             </div>
 
             <h1 className="text-5xl lg:text-7xl font-bold tracking-tight text-foreground mb-6 leading-[1.1]" data-testid="text-hero-title">
@@ -139,7 +139,7 @@ export default function LandingPage() {
 
         <footer className="relative z-10 border-t border-border/30 py-4 px-8">
           <div className="max-w-2xl mx-auto flex items-center justify-between flex-wrap gap-2 text-xs text-muted-foreground">
-            <span>ContentHub</span>
+            <span>superBrain</span>
             <Link href="/changelog">
               <a className="underline underline-offset-2 cursor-pointer" data-testid="link-changelog">What's New</a>
             </Link>
