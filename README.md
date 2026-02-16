@@ -1,121 +1,133 @@
-# superBrain - My LinkedIn & Substack Second Brain
+<p align="center">
+  <img src="client/public/favicon.png" alt="superBrain logo" width="80" />
+</p>
 
-superBrain is a full-stack web application that helps you save, organize, and search your favorite LinkedIn and Substack posts using AI. Think of it as a personal knowledge base for professional content — save posts manually, scrape them from URLs, bulk import via CSV/JSON, or use the Chrome extension to save directly from LinkedIn.
+<h1 align="center">superBrain</h1>
+
+<p align="center">
+  <strong>Your LinkedIn & Substack Second Brain</strong><br />
+  Save, organize, and search your favorite professional content with AI.
+</p>
+
+<p align="center">
+  <a href="https://super-brain.app">Live App</a> &middot;
+  <a href="#features">Features</a> &middot;
+  <a href="#getting-started">Get Started</a> &middot;
+  <a href="#contributing">Contributing</a> &middot;
+  <a href="#roadmap">Roadmap</a>
+</p>
+
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License" /></a>
+</p>
+
+---
+
+## What is superBrain?
+
+superBrain is an open-source web app that acts as a personal knowledge base for your professional reading. Stop losing valuable insights from LinkedIn posts and Substack articles — save them in one place, organize with tags and collections, and use AI-powered search to find exactly what you need.
 
 ## Features
 
-- **Save Posts** - Manually create entries or paste a URL to auto-scrape content, images, and author info
-- **URL Scraping** - Platform-specific extraction for LinkedIn, Substack (including custom domains), and generic URLs with multi-stage content cleaning
-- **Bulk Import** - Upload CSV or JSON files to import many posts at once
-- **Chrome Extension** - Save LinkedIn and Substack posts directly from your feed with one click
-- **Tags** - Add tags when creating posts, view them as badges on cards, and filter by tag on the dashboard
-- **Collections** - Create named collections to organize posts into groups, add/remove posts, and filter the dashboard by collection
-- **AI Search** - Ask natural language questions about your saved content using semantic search (planned integration with Loominus Studio for decoupled AI logic)
-- **Grid & List Views** - Toggle between card grid and compact list layouts on the dashboard
-- **Favorites** - Mark posts as favorites for quick access
-- **Platform Badges** - Color-coded badges for LinkedIn (blue), Substack (orange), and other sources
-
-## Changelog
-
-The app includes a built-in changelog page at `/changelog` that tracks updates across three categories:
-
-- **New** — Brand new features added to the app
-- **Improved** — Enhancements to existing features
-- **Fixed** — Bug fixes
-
-Each entry is grouped by version number and date. The changelog data lives in `client/src/data/changelog.json` for easy updates.
+- **Save Posts** — Manually create entries or paste a URL to auto-scrape content, images, and author info
+- **URL Scraping** — Smart extraction for LinkedIn, Substack (including custom domains), and generic URLs
+- **Bulk Import** — Upload CSV or JSON files to import many posts at once
+- **Chrome Extension** — Save posts directly from LinkedIn and Substack with one click
+- **Tags & Collections** — Organize posts with tags and named collections, filter by either on the dashboard
+- **AI Search** — Ask natural language questions about your saved content using semantic search
+- **Grid & List Views** — Toggle between card grid and compact list layouts
+- **Favorites** — Mark posts as favorites for quick access
+- **Platform Badges** — Color-coded badges for LinkedIn (blue), Substack (orange), and other sources
 
 ## Tech Stack
 
-### Frontend
-- React 18 + TypeScript, bundled with Vite
-- Wouter for client-side routing
-- TanStack React Query for server state
-- shadcn/ui components (Radix UI + Tailwind CSS)
-- Framer Motion for animations
-- React Hook Form + Zod for form validation
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui, Framer Motion |
+| Backend | Express.js, TypeScript, Passport.js (OIDC Auth) |
+| Database | PostgreSQL, Drizzle ORM |
+| AI | OpenAI SDK (semantic search & chat) |
+| Scraping | Cheerio (server-side HTML parsing) |
 
-### Backend
-- Express.js + TypeScript
-- Replit Auth (OpenID Connect) with Passport.js
-- OpenAI SDK for AI-powered search and chat
-- Cheerio for server-side URL scraping
+## Getting Started
 
-### Database
-- PostgreSQL with Drizzle ORM
-- Tables: `users`, `sessions`, `posts`, `collections`, `post_collections`, `conversations`, `messages`
-- Schema defined in `shared/schema.ts` with Drizzle-Zod validation
+### Prerequisites
+
+- Node.js 20+
+- PostgreSQL database
+
+### Environment Variables
+
+Create a `.env` file or set the following environment variables:
+
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `SESSION_SECRET` | Express session encryption key |
+| `AI_INTEGRATIONS_OPENAI_API_KEY` | OpenAI API key |
+| `AI_INTEGRATIONS_OPENAI_BASE_URL` | OpenAI base URL |
+
+### Installation
+
+```bash
+git clone https://github.com/filippostmech/superbrain.git
+cd superbrain
+npm install
+npm run db:push    # Push database schema to PostgreSQL
+npm run dev        # Start the development server
+```
+
+### Production Build
+
+```bash
+npm run build      # Builds client (Vite) + server (esbuild) to dist/
+npm start          # Run production server
+```
 
 ## Project Structure
 
 ```
 client/                  React frontend
   src/
-    components/          App components + shadcn ui components
-      PostCard.tsx         Grid view post card
-      PostListItem.tsx     List view post row
-      CreatePostDialog.tsx Post creation with URL scraping & tag editing
-      BulkImportDialog.tsx CSV/JSON bulk import
-      AISearchSidebar.tsx  AI search panel
-      CollectionManager.tsx  Create/delete/filter collections
-      AddToCollectionPopover.tsx  Assign posts to collections
-    data/
-      changelog.json       Changelog entries
-    hooks/               Custom hooks (auth, posts, collections, toast)
-    lib/                 Utilities (queryClient, auth, cn)
-    pages/               Page components
-      Dashboard.tsx        Main app (grid/list, search, tag/collection filters)
-      LandingPage.tsx      Public landing page
-      ChangelogPage.tsx    Version history
-      ExtensionPage.tsx    Chrome extension setup guide
+    components/          UI components (PostCard, CreatePostDialog, AISearchSidebar, etc.)
+    data/                Static data (changelog.json)
+    hooks/               Custom hooks (auth, posts, collections)
+    lib/                 Utilities (queryClient, auth helpers)
+    pages/               Page components (Dashboard, LandingPage, ChangelogPage)
   public/
-    extension/           Chrome extension (Manifest V3)
+    extension/           Chrome Extension (Manifest V3)
 
 server/                  Express backend
   index.ts               HTTP server entry point
   routes.ts              API routes (CRUD, scrape, import, AI, collections)
   storage.ts             Database storage interface
-  scraper.ts             URL scraping (Cheerio)
-  replit_integrations/   Auth, chat, audio, image utilities
+  scraper.ts             URL scraping with Cheerio
 
 shared/                  Shared between client & server
-  schema.ts              Drizzle schema + Zod insert schemas
-  models/                Table definitions (auth, chat)
-  routes.ts              API route contracts with Zod validation
-```
-
-## Getting Started
-
-### Prerequisites
-- Node.js 20+
-- PostgreSQL database
-- Environment variables:
-  - `DATABASE_URL` — PostgreSQL connection string
-  - `SESSION_SECRET` — Express session encryption key
-  - `AI_INTEGRATIONS_OPENAI_API_KEY` — OpenAI API key (via Replit AI Integrations)
-  - `AI_INTEGRATIONS_OPENAI_BASE_URL` — OpenAI base URL
-
-### Development
-```bash
-npm install
-npm run db:push    # Push database schema
-npm run dev        # Start dev server
-```
-
-### Production Build
-```bash
-npm run build      # Builds client (Vite) + server (esbuild) to dist/
-npm start          # Run production server
+  schema.ts              Drizzle schema + Zod validation
+  routes.ts              API route contracts
 ```
 
 ## Chrome Extension
 
-Located in `client/public/extension/`. To install:
+The Chrome extension lets you save posts directly from LinkedIn and Substack pages.
 
 1. Open Chrome and go to `chrome://extensions/`
-2. Enable "Developer mode"
-3. Click "Load unpacked" and select the `client/public/extension/` folder
-4. The extension adds "Save to superBrain" buttons on LinkedIn post pages
+2. Enable **Developer mode**
+3. Click **Load unpacked** and select the `client/public/extension/` folder
+4. "Save to superBrain" buttons will appear on LinkedIn post pages
+
+## Contributing
+
+Contributions are welcome! Whether it's bug fixes, new features, or documentation improvements, we'd love your help.
+
+1. **Fork** the repository
+2. **Create a branch** for your feature (`git checkout -b feature/my-feature`)
+3. **Commit** your changes (`git commit -m 'Add my feature'`)
+4. **Push** to your branch (`git push origin feature/my-feature`)
+5. **Open a Pull Request**
+
+Please make sure your code follows the existing style and includes relevant tests where applicable.
 
 ## Roadmap
 
@@ -145,3 +157,7 @@ Located in `client/public/extension/`. To install:
 - Reading stats dashboard
 - Mobile-responsive improvements
 - Email-to-save integration
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
