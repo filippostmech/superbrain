@@ -1,5 +1,28 @@
 [
   {
+    "date": "February 16, 2026",
+    "version": "0.6.0",
+    "entries": [
+      {
+        "category": "New",
+        "items": [
+          "Tags on posts — add tags when creating a post using Enter or comma to separate, displayed as badges on cards and list items",
+          "Tag filtering — clickable tag bar on the dashboard lets you filter posts by any tag in one click",
+          "Collections — create named collections to organize your saved posts into groups",
+          "Add to Collection — use the folder icon on any post card to add or remove it from your collections",
+          "Collection filtering — select a collection from the Collections menu to view only posts in that group"
+        ]
+      },
+      {
+        "category": "Improved",
+        "items": [
+          "Dashboard now combines tab, tag, and collection filters so you can drill down to exactly the posts you need",
+          "Real-time UI updates when adding or removing posts from collections — no page refresh needed"
+        ]
+      }
+    ]
+  },
+  {
     "date": "February 14, 2026",
     "version": "0.5.0",
     "entries": [
