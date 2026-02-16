@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="client/public/favicon.png" alt="superBrain logo" width="80" />
+  <img src="assets/logo.png" alt="superBrain logo" width="80" />
 </p>
 
 <h1 align="center">superBrain</h1>
