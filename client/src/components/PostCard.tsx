@@ -5,8 +5,9 @@ import { useUpdatePost, useDeletePost } from "@/hooks/use-posts";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Trash2, ExternalLink, Calendar, MessageSquareQuote } from "lucide-react";
+import { Heart, Trash2, ExternalLink, Calendar, MessageSquareQuote, Tag } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AddToCollectionPopover } from "@/components/AddToCollectionPopover";
 import { motion } from "framer-motion";
 
 import {
@@ -107,7 +108,20 @@ export function PostCard({ post }: { post: Post }) {
               {post.summary}
             </div>
           )}
-          
+
+          {post.tags && post.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mb-3" data-testid={`tags-container-${post.id}`}>
+              {post.tags.slice(0, 3).map((tag) => (
+                <Badge key={tag} variant="secondary" className="rounded-md text-[10px] px-1.5 py-0 bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary" data-testid={`badge-tag-${post.id}-${tag}`}>
+                  {tag}
+                </Badge>
+              ))}
+              {post.tags.length > 3 && (
+                <span className="text-[10px] text-muted-foreground">+{post.tags.length - 3} more</span>
+              )}
+            </div>
+          )}
+
           <div className={cn(
             "prose prose-sm prose-slate max-w-none font-serif text-base leading-relaxed text-foreground/90 transition-all duration-300 relative",
             !isExpanded && "line-clamp-4"
@@ -137,6 +151,7 @@ export function PostCard({ post }: { post: Post }) {
                 </a>
               </Button>
             )}
+            <AddToCollectionPopover postId={post.id} />
           </div>
 
           <AlertDialog>

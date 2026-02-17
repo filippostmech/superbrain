@@ -245,6 +245,121 @@ export async function registerRoutes(
     }
   });
 
+  // Collections CRUD
+  app.get(api.collections.list.path, requireAuth, async (req, res) => {
+    try {
+      const colls = await storage.getCollections(getUserId(req));
+      res.json(colls);
+    } catch (e) {
+      console.error("List collections error:", e);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.post(api.collections.create.path, requireAuth, async (req, res) => {
+    try {
+      const input = api.collections.create.input.parse(req.body);
+      const collection = await storage.createCollection({ ...input, userId: getUserId(req) });
+      res.status(201).json(collection);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({ message: err.errors[0].message, field: err.errors[0].path.join('.') });
+      }
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.patch(api.collections.update.path, requireAuth, async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const existing = await storage.getCollection(id);
+      if (!existing || existing.userId !== getUserId(req)) {
+        return res.status(404).json({ message: 'Collection not found' });
+      }
+      const input = api.collections.update.input.parse(req.body);
+      const updated = await storage.updateCollection(id, input);
+      res.json(updated);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({ message: err.errors[0].message });
+      }
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.delete(api.collections.delete.path, requireAuth, async (req, res) => {
+    const id = Number(req.params.id);
+    const existing = await storage.getCollection(id);
+    if (!existing || existing.userId !== getUserId(req)) {
+      return res.status(404).json({ message: 'Collection not found' });
+    }
+    await storage.deleteCollection(id);
+    res.status(204).send();
+  });
+
+  app.post(api.collections.addPost.path, requireAuth, async (req, res) => {
+    try {
+      const collectionId = Number(req.params.id);
+      const { postId } = api.collections.addPost.input.parse(req.body);
+      const collection = await storage.getCollection(collectionId);
+      if (!collection || collection.userId !== getUserId(req)) {
+        return res.status(404).json({ message: 'Collection not found' });
+      }
+      const post = await storage.getPost(postId);
+      if (!post || post.userId !== getUserId(req)) {
+        return res.status(404).json({ message: 'Post not found' });
+      }
+      await storage.addPostToCollection(postId, collectionId);
+      res.status(201).json({ message: "Post added to collection" });
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({ message: err.errors[0].message });
+      }
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.delete("/api/collections/:id/posts/:postId", requireAuth, async (req, res) => {
+    const collectionId = Number(req.params.id);
+    const postId = Number(req.params.postId);
+    const collection = await storage.getCollection(collectionId);
+    if (!collection || collection.userId !== getUserId(req)) {
+      return res.status(404).json({ message: 'Collection not found' });
+    }
+    await storage.removePostFromCollection(postId, collectionId);
+    res.status(204).send();
+  });
+
+  app.get(api.collections.getPosts.path, requireAuth, async (req, res) => {
+    try {
+      const collectionId = Number(req.params.id);
+      const collection = await storage.getCollection(collectionId);
+      if (!collection || collection.userId !== getUserId(req)) {
+        return res.status(404).json({ message: 'Collection not found' });
+      }
+      const collPosts = await storage.getCollectionPosts(collectionId);
+      res.json(collPosts);
+    } catch (e) {
+      console.error("Get collection posts error:", e);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get("/api/posts/:postId/collections", requireAuth, async (req, res) => {
+    try {
+      const postId = Number(req.params.postId);
+      const post = await storage.getPost(postId);
+      if (!post || post.userId !== getUserId(req)) {
+        return res.status(404).json({ message: 'Post not found' });
+      }
+      const colls = await storage.getPostCollections(postId);
+      res.json(colls);
+    } catch (e) {
+      console.error("Get post collections error:", e);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // AI Search Endpoint (RAG-lite)
   app.post(api.posts.search.path, requireAuth, async (req, res) => {
     try {

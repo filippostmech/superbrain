@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, Trash2, ExternalLink, Calendar, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AddToCollectionPopover } from "@/components/AddToCollectionPopover";
 import { motion } from "framer-motion";
 
 function getPlatformBadgeClass(platform: string): string {
@@ -87,6 +88,18 @@ export function PostListItem({ post }: { post: Post }) {
                   by {post.authorName}
                 </span>
               )}
+              {post.tags && post.tags.length > 0 && (
+                <>
+                  {post.tags.slice(0, 2).map((tag) => (
+                    <Badge key={tag} variant="secondary" className="rounded-md text-[10px] px-1.5 py-0 bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary" data-testid={`badge-tag-list-${post.id}-${tag}`}>
+                      {tag}
+                    </Badge>
+                  ))}
+                  {post.tags.length > 2 && (
+                    <span className="text-[10px] text-muted-foreground">+{post.tags.length - 2}</span>
+                  )}
+                </>
+              )}
             </div>
 
             <div
@@ -132,6 +145,8 @@ export function PostListItem({ post }: { post: Post }) {
             >
               <Heart className={cn("w-4 h-4", post.isFavorite && "fill-current")} />
             </Button>
+
+            <AddToCollectionPopover postId={post.id} />
 
             {post.originalUrl && (
               <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground" asChild>

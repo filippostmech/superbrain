@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { insertPostSchema, posts } from './schema';
+import { insertPostSchema, insertCollectionSchema, posts, collections } from './schema';
 
 export const errorSchemas = {
   validation: z.object({
@@ -116,6 +116,71 @@ export const api = {
           skipped: z.number(),
         }),
         400: errorSchemas.validation,
+      },
+    },
+  },
+  collections: {
+    list: {
+      method: 'GET' as const,
+      path: '/api/collections' as const,
+      responses: {
+        200: z.array(z.custom<typeof collections.$inferSelect & { postCount: number }>()),
+      },
+    },
+    create: {
+      method: 'POST' as const,
+      path: '/api/collections' as const,
+      input: insertCollectionSchema,
+      responses: {
+        201: z.custom<typeof collections.$inferSelect>(),
+        400: errorSchemas.validation,
+      },
+    },
+    update: {
+      method: 'PATCH' as const,
+      path: '/api/collections/:id' as const,
+      input: insertCollectionSchema.partial(),
+      responses: {
+        200: z.custom<typeof collections.$inferSelect>(),
+        404: errorSchemas.notFound,
+      },
+    },
+    delete: {
+      method: 'DELETE' as const,
+      path: '/api/collections/:id' as const,
+      responses: {
+        204: z.void(),
+        404: errorSchemas.notFound,
+      },
+    },
+    addPost: {
+      method: 'POST' as const,
+      path: '/api/collections/:id/posts' as const,
+      input: z.object({ postId: z.number() }),
+      responses: {
+        201: z.object({ message: z.string() }),
+        400: errorSchemas.validation,
+      },
+    },
+    removePost: {
+      method: 'DELETE' as const,
+      path: '/api/collections/:id/posts/:postId' as const,
+      responses: {
+        204: z.void(),
+      },
+    },
+    getPosts: {
+      method: 'GET' as const,
+      path: '/api/collections/:id/posts' as const,
+      responses: {
+        200: z.array(z.custom<typeof posts.$inferSelect>()),
+      },
+    },
+    getPostCollections: {
+      method: 'GET' as const,
+      path: '/api/posts/:postId/collections' as const,
+      responses: {
+        200: z.array(z.custom<typeof collections.$inferSelect>()),
       },
     },
   },

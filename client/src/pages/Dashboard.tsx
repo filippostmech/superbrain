@@ -3,6 +3,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { usePosts } from "@/hooks/use-posts";
 import { CreatePostDialog } from "@/components/CreatePostDialog";
 import { BulkImportDialog } from "@/components/BulkImportDialog";
+import { CollectionManager } from "@/components/CollectionManager";
+import { useCollectionPosts } from "@/hooks/use-collections";
 import { PostCard } from "@/components/PostCard";
 import { AISearchSidebar } from "@/components/AISearchSidebar";
 import { Button } from "@/components/ui/button";
@@ -15,8 +17,10 @@ import {
   LayoutGrid, 
   List, 
   Bookmark,
-  Filter,
-  Chrome
+  Tag,
+  Chrome,
+  Sparkles,
+  PanelRightClose
 } from "lucide-react";
 import { Link } from "wouter";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -32,10 +36,16 @@ export default function Dashboard() {
   const { data: posts, isLoading } = usePosts(search);
   const [showAiSidebar, setShowAiSidebar] = useState(true);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [selectedCollectionId, setSelectedCollectionId] = useState<number | null>(null);
+  const { data: collectionPosts } = useCollectionPosts(selectedCollectionId);
 
-  // Filter posts based on tabs (client-side for now for simplicity)
-  const filteredPosts = posts?.filter(post => {
-    if (activeTab === "favorites") return post.isFavorite;
+  const allTags = Array.from(new Set((posts || []).flatMap(p => p.tags || []))).sort();
+
+  const basePosts = selectedCollectionId ? collectionPosts : posts;
+  const filteredPosts = basePosts?.filter(post => {
+    if (activeTab === "favorites" && !post.isFavorite) return false;
+    if (selectedTag && !(post.tags || []).includes(selectedTag)) return false;
     return true;
   });
 
@@ -70,8 +80,13 @@ export default function Dashboard() {
             size="sm" 
             className="hidden md:flex gap-2"
             onClick={() => setShowAiSidebar(!showAiSidebar)}
+            data-testid="button-toggle-ai-sidebar"
           >
-            <LayoutGrid className="w-4 h-4" />
+            {showAiSidebar ? (
+              <PanelRightClose className="w-4 h-4" />
+            ) : (
+              <Sparkles className="w-4 h-4" />
+            )}
             {showAiSidebar ? "Hide AI" : "Show AI"}
           </Button>
 
@@ -128,10 +143,10 @@ export default function Dashboard() {
               </Tabs>
               
               <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" className="h-8 rounded-full text-xs hidden sm:flex">
-                  <Filter className="w-3 h-3 mr-2" />
-                  Filter
-                </Button>
+                <CollectionManager
+                  selectedCollectionId={selectedCollectionId}
+                  onSelectCollection={setSelectedCollectionId}
+                />
                 <div className="p-1 bg-muted/50 rounded-lg hidden sm:flex border border-border/50">
                   <Button
                     variant="ghost"
@@ -154,6 +169,32 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
+
+            {allTags.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mb-6" data-testid="tag-filter-bar">
+                <Button
+                  variant={selectedTag === null ? "default" : "outline"}
+                  size="sm"
+                  className="rounded-full text-xs"
+                  onClick={() => setSelectedTag(null)}
+                  data-testid="button-filter-all-tags"
+                >
+                  All
+                </Button>
+                {allTags.map((tag) => (
+                  <Button
+                    key={tag}
+                    variant={selectedTag === tag ? "default" : "outline"}
+                    size="sm"
+                    className="rounded-full text-xs"
+                    onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
+                    data-testid={`button-filter-tag-${tag}`}
+                  >
+                    {tag}
+                  </Button>
+                ))}
+              </div>
+            )}
 
             {/* Post Grid */}
             {isLoading ? (
@@ -194,7 +235,16 @@ export default function Dashboard() {
         {/* AI Sidebar (Desktop) */}
         <motion.aside 
           initial={false}
-          animate={{ width: showAiSidebar ? 380 : 0, opacity: showAiSidebar ? 1 : 0 }}
+          animate={{ 
+            width: showAiSidebar ? 380 : 0,
+            opacity: showAiSidebar ? 1 : 0,
+          }}
+          transition={{ 
+            type: "spring",
+            stiffness: 300,
+            damping: 30,
+            opacity: { duration: 0.2 }
+          }}
           className="hidden md:block border-l border-border bg-card overflow-hidden shrink-0"
         >
           <div className="w-[380px] h-full">

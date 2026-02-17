@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Plus, Loader2, Link as LinkIcon, Sparkles, Image as ImageIcon } from "lucide-react";
+import { Plus, Loader2, Link as LinkIcon, Sparkles, Image as ImageIcon, X } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface ScrapedData {
   content: string;
@@ -23,6 +24,7 @@ interface ScrapedData {
 export function CreatePostDialog() {
   const [open, setOpen] = useState(false);
   const [isScraping, setIsScraping] = useState(false);
+  const [tagInput, setTagInput] = useState("");
   const [scrapePreview, setScrapePreview] = useState<ScrapedData | null>(null);
   const { mutate, isPending } = useCreatePost();
 
@@ -96,6 +98,7 @@ export function CreatePostDialog() {
     if (!v) {
       form.reset();
       setScrapePreview(null);
+      setTagInput("");
     }
   };
 
@@ -215,6 +218,46 @@ export function CreatePostDialog() {
                 </FormItem>
               )}
             />
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Tags</label>
+              <div className="flex flex-wrap gap-1.5 mb-2">
+                {(form.watch("tags") || []).map((tag: string) => (
+                  <Badge key={tag} variant="secondary" className="rounded-md bg-primary/10 text-primary gap-1" data-testid={`badge-form-tag-${tag}`}>
+                    {tag}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const current = form.getValues("tags") || [];
+                        form.setValue("tags", current.filter((t: string) => t !== tag));
+                      }}
+                      className="ml-0.5 hover:text-destructive"
+                      data-testid={`button-remove-tag-${tag}`}
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </Badge>
+                ))}
+              </div>
+              <Input
+                placeholder="Type a tag and press Enter..."
+                className="rounded-xl"
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === ",") {
+                    e.preventDefault();
+                    const tag = tagInput.trim().toLowerCase();
+                    if (tag && !(form.getValues("tags") || []).includes(tag)) {
+                      form.setValue("tags", [...(form.getValues("tags") || []), tag]);
+                    }
+                    setTagInput("");
+                  }
+                }}
+                data-testid="input-tags"
+              />
+              <p className="text-xs text-muted-foreground">Press Enter or comma to add tags</p>
+            </div>
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => handleOpenChange(false)} className="rounded-xl">Cancel</Button>

@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { ArrowRight, Bookmark, Search, Zap } from "lucide-react";
+import { ArrowRight, Bookmark, Search, Star, Zap } from "lucide-react";
+import { SiGithub } from "react-icons/si";
 import { Link } from "wouter";
 
 const WORDS = ["LinkedIn", "Substack"];
@@ -96,7 +97,7 @@ export default function LandingPage() {
               <Button 
                 size="lg" 
                 onClick={handleLogin}
-                className="rounded-full text-base px-8 py-6 bg-primary hover:bg-primary/90 shadow-lg hover:shadow-primary/25 transition-all"
+                data-testid="button-get-started"
               >
                 Get Started
                 <ArrowRight className="ml-2 w-5 h-5" />
@@ -104,10 +105,13 @@ export default function LandingPage() {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="rounded-full text-base px-8 py-6 border-2"
-                data-testid="button-view-demo"
+                asChild
               >
-                View Demo
+                <a href="https://github.com/filippostmech/superbrain" target="_blank" rel="noopener noreferrer" data-testid="button-github">
+                  <SiGithub className="mr-2 w-5 h-5" />
+                  <Star className="mr-1 w-4 h-4" />
+                  Star on GitHub
+                </a>
               </Button>
             </div>
           </motion.div>
@@ -138,11 +142,17 @@ export default function LandingPage() {
         </div>
 
         <footer className="relative z-10 border-t border-border/30 py-4 px-8">
-          <div className="max-w-2xl mx-auto flex items-center justify-between flex-wrap gap-2 text-xs text-muted-foreground">
+          <div className="max-w-2xl mx-auto flex items-center justify-between flex-wrap gap-4 text-xs text-muted-foreground">
             <span>superBrain</span>
-            <Link href="/changelog">
-              <a className="underline underline-offset-2 cursor-pointer" data-testid="link-changelog">What's New</a>
-            </Link>
+            <div className="flex items-center gap-4 flex-wrap">
+              <a href="https://github.com/filippostmech/superbrain" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 underline underline-offset-2 cursor-pointer" data-testid="link-github-footer">
+                <SiGithub className="w-3 h-3" />
+                GitHub
+              </a>
+              <Link href="/changelog">
+                <a className="underline underline-offset-2 cursor-pointer" data-testid="link-changelog">What's New</a>
+              </Link>
+            </div>
           </div>
         </footer>
       </div>
