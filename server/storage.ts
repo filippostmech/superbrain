@@ -35,7 +35,10 @@ export class DatabaseStorage implements IStorage {
         or(
           ilike(posts.content, searchLower),
           ilike(posts.summary, searchLower),
-          ilike(posts.authorName, searchLower)
+          ilike(posts.authorName, searchLower),
+          ilike(posts.originalUrl, searchLower),
+          ilike(posts.platform, searchLower),
+          sql`EXISTS (SELECT 1 FROM jsonb_array_elements_text(${posts.tags}) AS tag WHERE tag ILIKE ${searchLower})`
         )
       ) as any;
     }

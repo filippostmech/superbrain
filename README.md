@@ -133,7 +133,7 @@ Please make sure your code follows the existing style and includes relevant test
 
 ### Phase 1 — Core Experience Polish
 - ~~Tags & collections for organizing posts~~ (done)
-- Full-text keyword search on the dashboard
+- ~~Full-text keyword search on the dashboard~~ (done)
 - Favorites filter view
 - Dark mode toggle
 

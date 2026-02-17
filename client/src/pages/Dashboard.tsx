@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { usePosts } from "@/hooks/use-posts";
 import { CreatePostDialog } from "@/components/CreatePostDialog";
@@ -31,9 +31,17 @@ import { PostListItem } from "@/components/PostListItem";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
-  const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [activeTab, setActiveTab] = useState("all");
-  const { data: posts, isLoading } = usePosts(search);
+  const { data: posts, isLoading } = usePosts(debouncedSearch);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchInput);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
   const [showAiSidebar, setShowAiSidebar] = useState(true);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
@@ -67,8 +75,8 @@ export default function Dashboard() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input 
               placeholder="Search library..." 
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
               className="pl-9 h-9 rounded-full bg-muted/50 border-transparent focus:bg-background focus:border-primary/20 transition-all w-[200px] lg:w-[300px]" 
             />
           </div>
