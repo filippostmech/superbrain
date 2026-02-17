@@ -7,6 +7,7 @@ import { setupAuth, registerAuthRoutes } from "./replit_integrations/auth";
 import { registerChatRoutes } from "./replit_integrations/chat";
 import OpenAI from "openai";
 import { scrapePost, detectPlatform } from "./scraper";
+import { createV1Router, generateApiKey } from "./apiV1";
 
 // Initialize OpenAI for our custom search/RAG endpoint
 const openai = new OpenAI({
@@ -395,6 +396,60 @@ export async function registerRoutes(
     } catch (e) {
         console.error("AI Search Error:", e);
         res.status(500).json({ message: "Failed to perform AI search" });
+    }
+  });
+
+  // Mount Public API v1
+  app.use("/api/v1", createV1Router());
+
+  // API Key Management (session-authenticated)
+  app.get("/api/api-keys", requireAuth, async (req, res) => {
+    try {
+      const keys = await storage.getApiKeys(getUserId(req));
+      res.json(keys.map(k => ({
+        id: k.id,
+        name: k.name,
+        keyPrefix: k.keyPrefix,
+        isActive: k.isActive,
+        createdAt: k.createdAt,
+        lastUsedAt: k.lastUsedAt,
+      })));
+    } catch (e) {
+      console.error("List API keys error:", e);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.post("/api/api-keys", requireAuth, async (req, res) => {
+    try {
+      const { name } = z.object({ name: z.string().min(1, "Name is required").max(100) }).parse(req.body);
+      const userId = getUserId(req);
+      const { fullKey, keyHash, keyPrefix } = generateApiKey();
+      const apiKey = await storage.createApiKey({ userId, keyHash, keyPrefix, name });
+      res.status(201).json({
+        id: apiKey.id,
+        name: apiKey.name,
+        key: fullKey,
+        keyPrefix,
+        createdAt: apiKey.createdAt,
+      });
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({ message: err.errors[0].message });
+      }
+      console.error("Create API key error:", err);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.delete("/api/api-keys/:id", requireAuth, async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      await storage.revokeApiKey(id, getUserId(req));
+      res.status(204).send();
+    } catch (e) {
+      console.error("Revoke API key error:", e);
+      res.status(500).json({ message: "Internal server error" });
     }
   });
 

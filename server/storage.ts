@@ -1,12 +1,12 @@
 import { db } from "./db";
-import { posts, collections, postCollections, type Post, type InsertPost, type Collection, type InsertCollection } from "@shared/schema";
+import { posts, collections, postCollections, apiKeys, type Post, type InsertPost, type Collection, type InsertCollection, type ApiKey } from "@shared/schema";
 
 type InsertPostWithUser = InsertPost & { userId: string };
 import { eq, desc, ilike, or, and, arrayContains, count } from "drizzle-orm";
 import { sql } from "drizzle-orm";
 
 export interface IStorage {
-  getPosts(userId: string, filters?: { search?: string; tags?: string; limit?: number; offset?: number }): Promise<Post[]>;
+  getPosts(userId: string, filters?: { search?: string; tags?: string; platform?: string; limit?: number; offset?: number }): Promise<Post[]>;
   getPost(id: number): Promise<Post | undefined>;
   createPost(post: InsertPostWithUser): Promise<Post>;
   createPosts(postsData: InsertPostWithUser[]): Promise<Post[]>;
@@ -23,10 +23,15 @@ export interface IStorage {
   removePostFromCollection(postId: number, collectionId: number): Promise<void>;
   getCollectionPosts(collectionId: number): Promise<Post[]>;
   getPostCollections(postId: number): Promise<Collection[]>;
+  createApiKey(data: { userId: string; keyHash: string; keyPrefix: string; name: string }): Promise<ApiKey>;
+  getApiKeys(userId: string): Promise<ApiKey[]>;
+  getApiKeyByHash(keyHash: string): Promise<ApiKey | undefined>;
+  revokeApiKey(id: number, userId: string): Promise<void>;
+  updateApiKeyLastUsed(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
-  async getPosts(userId: string, filters?: { search?: string; tags?: string; limit?: number; offset?: number }): Promise<Post[]> {
+  async getPosts(userId: string, filters?: { search?: string; tags?: string; platform?: string; limit?: number; offset?: number }): Promise<Post[]> {
     let query = db.select().from(posts).where(eq(posts.userId, userId)).orderBy(desc(posts.createdAt));
 
     if (filters?.search) {
@@ -44,9 +49,11 @@ export class DatabaseStorage implements IStorage {
     }
 
     if (filters?.tags) {
-       // Simple tag filtering - ideally strictly typed but jsonb is flexible
-       // This assumes tags is stored as a string array in JSONB
        query = query.where(sql`${posts.tags} ? ${filters.tags}`) as any;
+    }
+
+    if (filters?.platform) {
+      query = query.where(eq(posts.platform, filters.platform)) as any;
     }
 
     if (filters?.limit) {
@@ -170,6 +177,31 @@ export class DatabaseStorage implements IStorage {
       .innerJoin(collections, eq(postCollections.collectionId, collections.id))
       .where(eq(postCollections.postId, postId));
     return results.map(r => r.collection);
+  }
+
+  async createApiKey(data: { userId: string; keyHash: string; keyPrefix: string; name: string }): Promise<ApiKey> {
+    const [key] = await db.insert(apiKeys).values(data).returning();
+    return key;
+  }
+
+  async getApiKeys(userId: string): Promise<ApiKey[]> {
+    return await db.select().from(apiKeys)
+      .where(eq(apiKeys.userId, userId))
+      .orderBy(desc(apiKeys.createdAt));
+  }
+
+  async getApiKeyByHash(keyHash: string): Promise<ApiKey | undefined> {
+    const [key] = await db.select().from(apiKeys)
+      .where(and(eq(apiKeys.keyHash, keyHash), eq(apiKeys.isActive, true)));
+    return key;
+  }
+
+  async revokeApiKey(id: number, userId: string): Promise<void> {
+    await db.update(apiKeys).set({ isActive: false }).where(and(eq(apiKeys.id, id), eq(apiKeys.userId, userId)));
+  }
+
+  async updateApiKeyLastUsed(id: number): Promise<void> {
+    await db.update(apiKeys).set({ lastUsedAt: new Date() }).where(eq(apiKeys.id, id));
   }
 }
 

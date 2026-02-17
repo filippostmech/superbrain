@@ -38,6 +38,7 @@ superBrain is an open-source web app that acts as a personal knowledge base for 
 - **Grid & List Views** — Toggle between card grid and compact list layouts
 - **Favorites** — Mark posts as favorites for quick access
 - **Platform Badges** — Color-coded badges for LinkedIn (blue), Substack (orange), and other sources
+- **Public REST API** — Programmatic access to your data via API keys (Pro)
 
 ## Tech Stack
 
@@ -100,6 +101,7 @@ client/                  React frontend
 server/                  Express backend
   index.ts               HTTP server entry point
   routes.ts              API routes (CRUD, scrape, import, AI, collections)
+  apiV1.ts               Public REST API v1 (Bearer token auth, rate limiting)
   storage.ts             Database storage interface
   scraper.ts             URL scraping with Cheerio
 
@@ -131,32 +133,44 @@ Please make sure your code follows the existing style and includes relevant test
 
 ## Roadmap
 
-### Phase 1 — Core Experience Polish
-- ~~Tags & collections for organizing posts~~ (done)
-- ~~Full-text keyword search on the dashboard~~ (done)
-- Favorites filter view
-- Dark mode toggle
+superBrain follows an **open-core** model: a generous free tier with the full source available under MIT, plus a Pro subscription for power-user and API features.
 
-### Phase 2 — Smarter Content
-- AI auto-tagging on save
-- AI-generated post summaries
-- Related posts suggestions
-- Weekly digest of saved content
+### Tier 1 — Free (Open-Source Core)
 
-### Phase 3 — More Sources
-- Twitter/X, Medium support
-- RSS feed import
-- Browser extension for any webpage
+Everything you need to build a personal knowledge base, included for all users:
 
-### Phase 4 — Collaboration & Sharing
-- Public shareable collections
-- Export to PDF, Markdown, CSV
-- Post highlights and notes
+| Status | Feature |
+|--------|---------|
+| Done | Save posts manually or via URL scraping (LinkedIn, Substack, generic) |
+| Done | Bulk import from CSV / JSON |
+| Done | Chrome Extension — save posts with one click from LinkedIn & Substack |
+| Done | Tags & named collections for organizing posts |
+| Done | AI-powered semantic search across saved content |
+| Done | Grid & list dashboard views with platform badges |
+| Done | Favorites for quick access |
+| Planned | Dark mode toggle |
+| Planned | Favorites-only filter view |
+| Planned | Export to CSV & Markdown |
+| Planned | Mobile-responsive improvements |
 
-### Phase 5 — Growth & Engagement
-- Reading stats dashboard
-- Mobile-responsive improvements
-- Email-to-save integration
+### Tier 2 — Pro (Subscription)
+
+Advanced features for creators, researchers, and developers who want to get more out of their saved content:
+
+| Status | Feature |
+|--------|---------|
+| Done | **Public REST API** — 7 endpoints (`/api/v1/*`) for posts, search, collections, and scraping |
+| Done | **API key management** — generate, revoke, and rotate keys from the dashboard |
+| Done | **Rate-limited access** — 100 req/min per key with standard `X-RateLimit-*` headers |
+| Planned | AI auto-tagging on save |
+| Planned | AI-generated post summaries |
+| Planned | Related posts suggestions |
+| Planned | Weekly digest emails |
+| Planned | Additional sources — Twitter/X, Medium, RSS feeds |
+| Planned | Public shareable collections |
+| Planned | Reading stats dashboard |
+| Planned | Higher API rate limits |
+| Planned | Priority support |
 
 ## License
 

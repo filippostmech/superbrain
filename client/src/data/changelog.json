@@ -1,5 +1,26 @@
 [
   {
+    "date": "February 17, 2026",
+    "version": "0.7.0",
+    "entries": [
+      {
+        "category": "New",
+        "items": [
+          "Full-text keyword search — search bar now matches across content, summary, author, tags, URL, and platform",
+          "Collapsible AI sidebar — smoothly slide the AI Assistant panel open and closed with a spring animation",
+          "Open-source release — superBrain is now available on GitHub under the MIT license with full setup docs"
+        ]
+      },
+      {
+        "category": "Improved",
+        "items": [
+          "Debounced search input — search waits 300ms after you stop typing for a snappier experience",
+          "Better toggle icons — AI sidebar button now shows contextual icons (sparkles when closed, panel-close when open)"
+        ]
+      }
+    ]
+  },
+  {
     "date": "February 16, 2026",
     "version": "0.6.0",
     "entries": [

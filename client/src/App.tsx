@@ -11,6 +11,10 @@ import LandingPage from "@/pages/LandingPage";
 import Dashboard from "@/pages/Dashboard";
 import ExtensionPage from "@/pages/ExtensionPage";
 import ChangelogPage from "@/pages/ChangelogPage";
+import TermsPage from "@/pages/TermsPage";
+import PrivacyPage from "@/pages/PrivacyPage";
+import DevelopersPage from "@/pages/DevelopersPage";
+import ApiKeysPage from "@/pages/ApiKeysPage";
 
 function Router() {
   const { user, isLoading } = useAuth();
@@ -26,12 +30,16 @@ function Router() {
   return (
     <Switch>
       <Route path="/changelog" component={ChangelogPage} />
+      <Route path="/terms" component={TermsPage} />
+      <Route path="/privacy" component={PrivacyPage} />
+      <Route path="/developers" component={DevelopersPage} />
       {!user ? (
         <Route path="/" component={LandingPage} />
       ) : (
         <>
           <Route path="/" component={Dashboard} />
           <Route path="/extension" component={ExtensionPage} />
+          <Route path="/api-keys" component={ApiKeysPage} />
         </>
       )}
       <Route component={NotFound} />

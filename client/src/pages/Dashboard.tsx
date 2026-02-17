@@ -19,8 +19,10 @@ import {
   Bookmark,
   Tag,
   Chrome,
+  Key,
   Sparkles,
-  PanelRightClose
+  PanelRightClose,
+  BookOpen
 } from "lucide-react";
 import { Link } from "wouter";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -126,6 +128,18 @@ export default function Dashboard() {
                 <p className="text-muted-foreground mt-1">Manage and organize your saved content.</p>
               </div>
               <div className="flex items-center gap-2 flex-wrap">
+                <Link href="/developers">
+                  <Button variant="outline" className="rounded-full" data-testid="button-developers-page">
+                    <BookOpen className="w-4 h-4 mr-2" />
+                    API Docs
+                  </Button>
+                </Link>
+                <Link href="/api-keys">
+                  <Button variant="outline" className="rounded-full" data-testid="button-api-keys-page">
+                    <Key className="w-4 h-4 mr-2" />
+                    API Keys
+                  </Button>
+                </Link>
                 <Link href="/extension">
                   <Button variant="outline" className="rounded-full" data-testid="button-extension-page">
                     <Chrome className="w-4 h-4 mr-2" />
