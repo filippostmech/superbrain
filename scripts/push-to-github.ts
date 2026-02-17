@@ -49,6 +49,18 @@ const EXCLUDED_FILES = new Set([
   ".gitignore",
 ]);
 
+const EXCLUDED_PREFIXES = [
+  "attached_assets/",
+];
+
+function isExcluded(filePath: string): boolean {
+  if (EXCLUDED_FILES.has(filePath)) return true;
+  for (const prefix of EXCLUDED_PREFIXES) {
+    if (filePath.startsWith(prefix)) return true;
+  }
+  return false;
+}
+
 async function main() {
   console.log("Connecting to GitHub...");
   const accessToken = await getAccessToken();
@@ -59,7 +71,7 @@ async function main() {
   const trackedFiles = execSync("git ls-files --cached", { cwd: rootDir, encoding: "utf-8" })
     .trim()
     .split("\n")
-    .filter((f) => f && !EXCLUDED_FILES.has(f));
+    .filter((f) => f && !isExcluded(f));
 
   console.log(`Found ${trackedFiles.length} files to push (${EXCLUDED_FILES.size} excluded)`);
 
