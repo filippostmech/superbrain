@@ -1,6 +1,25 @@
 [
   {
     "date": "February 18, 2026",
+    "version": "0.10.0",
+    "entries": [
+      {
+        "category": "New",
+        "items": [
+          "Dark mode — toggle between light and dark themes from any page header, with your preference saved automatically",
+          "Favorites filter — quickly view only your favorited posts using the Favorites tab on the dashboard"
+        ]
+      },
+      {
+        "category": "Improved",
+        "items": [
+          "Dark mode compatibility — fixed all hardcoded white backgrounds across the app to adapt to dark theme"
+        ]
+      }
+    ]
+  },
+  {
+    "date": "February 18, 2026",
     "version": "0.9.0",
     "entries": [
       {

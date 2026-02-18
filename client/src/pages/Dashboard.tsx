@@ -22,9 +22,12 @@ import {
   Key,
   Sparkles,
   PanelRightClose,
-  BookOpen
+  BookOpen,
+  Sun,
+  Moon
 } from "lucide-react";
 import { Link } from "wouter";
+import { useTheme } from "@/hooks/use-theme";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
@@ -33,6 +36,7 @@ import { PostListItem } from "@/components/PostListItem";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [activeTab, setActiveTab] = useState("all");
@@ -62,7 +66,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-background flex flex-col h-screen overflow-hidden">
       {/* Top Navigation */}
-      <header className="h-16 border-b border-border/60 bg-white/80 backdrop-blur-md px-4 lg:px-6 flex items-center justify-between z-30 shrink-0">
+      <header className="h-16 border-b border-border/60 bg-background/80 backdrop-blur-md px-4 lg:px-6 flex items-center justify-between z-30 shrink-0">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 font-bold text-lg text-primary">
             <div className="bg-primary p-1.5 rounded-lg">
@@ -98,6 +102,15 @@ export default function Dashboard() {
               <Sparkles className="w-4 h-4" />
             )}
             {showAiSidebar ? "Hide AI" : "Show AI"}
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleTheme}
+            data-testid="button-theme-toggle"
+          >
+            {theme === "light" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
           </Button>
 
           <div className="flex items-center gap-3 pl-4 border-l border-border">
@@ -155,10 +168,10 @@ export default function Dashboard() {
             <div className="flex items-center justify-between mb-6">
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-auto">
                 <TabsList className="bg-muted/50 p-1 rounded-full border border-border/50">
-                  <TabsTrigger value="all" className="rounded-full px-4 text-xs font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                  <TabsTrigger value="all" className="rounded-full px-4 text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm">
                     All Posts
                   </TabsTrigger>
-                  <TabsTrigger value="favorites" className="rounded-full px-4 text-xs font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                  <TabsTrigger value="favorites" className="rounded-full px-4 text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm">
                     Favorites
                   </TabsTrigger>
                 </TabsList>
@@ -173,7 +186,7 @@ export default function Dashboard() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className={cn("h-6 w-6 rounded-md", viewMode === "grid" ? "bg-white shadow-sm" : "text-muted-foreground")}
+                    className={cn("h-6 w-6 rounded-md", viewMode === "grid" ? "bg-background shadow-sm" : "text-muted-foreground")}
                     onClick={() => setViewMode("grid")}
                     data-testid="button-view-grid"
                   >
@@ -182,7 +195,7 @@ export default function Dashboard() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className={cn("h-6 w-6 rounded-md", viewMode === "list" ? "bg-white shadow-sm" : "text-muted-foreground")}
+                    className={cn("h-6 w-6 rounded-md", viewMode === "list" ? "bg-background shadow-sm" : "text-muted-foreground")}
                     onClick={() => setViewMode("list")}
                     data-testid="button-view-list"
                   >

@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { ArrowRight, Bookmark, Search, Star, Zap } from "lucide-react";
+import { ArrowRight, Bookmark, Search, Star, Zap, Sun, Moon } from "lucide-react";
 import { SiGithub } from "react-icons/si";
 import { Link } from "wouter";
+import { useTheme } from "@/hooks/use-theme";
 
 const WORDS = ["LinkedIn", "Substack"];
 const TYPING_SPEED = 110;
@@ -56,6 +57,8 @@ function TypewriterText() {
 }
 
 export default function LandingPage() {
+  const { theme, toggleTheme } = useTheme();
+
   const handleLogin = () => {
     window.location.href = "/api/login";
   };
@@ -82,6 +85,11 @@ export default function LandingPage() {
                 <Bookmark className="w-6 h-6 text-white" />
               </div>
               <span className="text-xl font-bold tracking-tight text-foreground">superBrain</span>
+              <div className="ml-auto">
+                <Button variant="ghost" size="icon" onClick={toggleTheme} data-testid="button-theme-toggle">
+                  {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+                </Button>
+              </div>
             </div>
 
             <h1 className="text-5xl lg:text-7xl font-bold tracking-tight text-foreground mb-6 leading-[1.1]" data-testid="text-hero-title">

@@ -191,8 +191,8 @@ Please make sure your code follows the existing style and includes relevant test
 | Done | API key management — generate, revoke, and rotate keys from the dashboard |
 | Done | Rate-limited access — 100 req/min per key with standard `X-RateLimit-*` headers |
 | Done | MCP Server — AI agents (Claude Desktop, Cursor) can query your knowledge base via Model Context Protocol |
-| Planned | Dark mode toggle |
-| Planned | Favorites-only filter view |
+| Done | Dark mode toggle |
+| Done | Favorites-only filter view |
 | Planned | Export to CSV & Markdown |
 | Planned | Mobile-responsive improvements |
 | Planned | AI auto-tagging on save |

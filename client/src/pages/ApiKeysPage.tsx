@@ -38,7 +38,10 @@ import {
   Trash2,
   Key,
   AlertTriangle,
+  Sun,
+  Moon,
 } from "lucide-react";
+import { useTheme } from "@/hooks/use-theme";
 
 interface ApiKey {
   id: number;
@@ -60,6 +63,7 @@ interface CreatedApiKey {
 export default function ApiKeysPage() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { theme, toggleTheme } = useTheme();
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [keyName, setKeyName] = useState("");
@@ -132,7 +136,7 @@ export default function ApiKeysPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="h-16 border-b border-border/60 bg-white/80 backdrop-blur-md px-4 lg:px-6 flex items-center justify-between z-30">
+      <header className="h-16 border-b border-border/60 bg-background/80 backdrop-blur-md px-4 lg:px-6 flex items-center justify-between z-30">
         <div className="flex items-center gap-4">
           <Link href="/">
             <Button variant="ghost" size="icon" data-testid="button-back-dashboard">
@@ -146,6 +150,9 @@ export default function ApiKeysPage() {
             <span>superBrain</span>
           </div>
         </div>
+        <Button variant="ghost" size="icon" onClick={toggleTheme} data-testid="button-theme-toggle">
+          {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+        </Button>
       </header>
 
       <main className="max-w-3xl mx-auto p-4 sm:p-6 lg:p-8">

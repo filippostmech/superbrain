@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
-import { ArrowLeft, Bookmark, Key } from "lucide-react";
+import { ArrowLeft, Bookmark, Key, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Link } from "wouter";
+import { useTheme } from "@/hooks/use-theme";
 
 function CodeBlock({ children }: { children: string }) {
   return (
@@ -268,6 +269,8 @@ const endpoints: EndpointProps[] = [
 ];
 
 export default function DevelopersPage() {
+  const { theme, toggleTheme } = useTheme();
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border/50 sticky top-0 z-[1000] bg-background/95 backdrop-blur">
@@ -283,13 +286,16 @@ export default function DevelopersPage() {
             </div>
             <span className="text-lg font-semibold tracking-tight">superBrain</span>
           </div>
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-2">
             <Link href="/api-keys">
               <Button variant="outline" size="sm" data-testid="button-manage-api-keys">
                 <Key className="w-4 h-4 mr-2" />
                 Manage API Keys
               </Button>
             </Link>
+            <Button variant="ghost" size="icon" onClick={toggleTheme} data-testid="button-theme-toggle">
+              {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+            </Button>
           </div>
         </div>
       </header>
