@@ -1,5 +1,50 @@
 [
   {
+    "date": "February 18, 2026",
+    "version": "0.9.0",
+    "entries": [
+      {
+        "category": "New",
+        "items": [
+          "MCP Server — AI agents (Claude Desktop, Cursor) can now query your superBrain knowledge base via the Model Context Protocol",
+          "5 MCP tools — search_knowledge, list_posts, save_post, scrape_url, and list_collections available as agent-callable tools",
+          "MCP setup docs — Developers page now includes setup instructions for Claude Desktop and Cursor with config examples"
+        ]
+      },
+      {
+        "category": "Improved",
+        "items": [
+          "Unified roadmap in README — merged Free and Pro tiers into a single feature table"
+        ]
+      }
+    ]
+  },
+  {
+    "date": "February 18, 2026",
+    "version": "0.8.0",
+    "entries": [
+      {
+        "category": "New",
+        "items": [
+          "Public REST API (v1) — 7 endpoints for posts, search, collections, and scraping at /api/v1/*",
+          "API key management — generate, copy, and revoke API keys from the new API Keys page",
+          "Bearer token authentication — secure your API requests with per-key tokens",
+          "Rate limiting — 100 requests per minute per API key with standard X-RateLimit headers",
+          "API Documentation page — interactive docs with curl examples for every endpoint",
+          "Developers page navigation — API Docs and API Keys buttons added to the dashboard, with cross-links between pages"
+        ]
+      },
+      {
+        "category": "Improved",
+        "items": [
+          "API docs show dynamic base URL — curl examples automatically use the correct domain for your deployment",
+          "Platform filtering in API — filter posts by platform (linkedin, substack, other) via the public API",
+          "GitHub sync script now properly excludes attached_assets/ directory"
+        ]
+      }
+    ]
+  },
+  {
     "date": "February 17, 2026",
     "version": "0.7.0",
     "entries": [

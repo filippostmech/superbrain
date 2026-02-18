@@ -119,6 +119,51 @@ The Chrome extension lets you save posts directly from LinkedIn and Substack pag
 3. Click **Load unpacked** and select the `client/public/extension/` folder
 4. "Save to superBrain" buttons will appear on LinkedIn post pages
 
+## MCP Server (AI Agent Integration)
+
+superBrain includes an MCP (Model Context Protocol) server that lets AI agents query your saved knowledge base directly. Compatible with Claude Desktop, Cursor, and any MCP-compatible client.
+
+### Available Tools
+
+| Tool | Description |
+|------|-------------|
+| `search_knowledge` | Semantic search across saved posts |
+| `list_posts` | List/filter posts by tags, platform, collection |
+| `save_post` | Save new content (text or URL) |
+| `scrape_url` | Scrape a URL and return structured content |
+| `list_collections` | List your collections |
+
+### Setup
+
+1. Generate an API key from your superBrain dashboard (API Keys page)
+2. Add the following to your Claude Desktop config (`claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "superbrain": {
+      "command": "npx",
+      "args": ["tsx", "mcp/server.ts"],
+      "cwd": "/path/to/superbrain",
+      "env": {
+        "SUPERBRAIN_API_KEY": "sb_your_api_key_here",
+        "SUPERBRAIN_URL": "https://www.super-brain.app"
+      }
+    }
+  }
+}
+```
+
+Set `SUPERBRAIN_URL` to your own domain if self-hosting. It defaults to `https://www.super-brain.app`.
+
+### Example Prompts
+
+Once connected, you can ask your AI agent things like:
+- "What did I save last month about AI pricing models?"
+- "Find my posts tagged with 'strategy'"
+- "Save this article to my superBrain: https://example.com/article"
+- "What collections do I have?"
+
 ## Contributing
 
 Contributions are welcome! Whether it's bug fixes, new features, or documentation improvements, we'd love your help.
@@ -133,12 +178,6 @@ Please make sure your code follows the existing style and includes relevant test
 
 ## Roadmap
 
-superBrain follows an **open-core** model: a generous free tier with the full source available under MIT, plus a Pro subscription for power-user and API features.
-
-### Tier 1 — Free (Open-Source Core)
-
-Everything you need to build a personal knowledge base, included for all users:
-
 | Status | Feature |
 |--------|---------|
 | Done | Save posts manually or via URL scraping (LinkedIn, Substack, generic) |
@@ -148,20 +187,14 @@ Everything you need to build a personal knowledge base, included for all users:
 | Done | AI-powered semantic search across saved content |
 | Done | Grid & list dashboard views with platform badges |
 | Done | Favorites for quick access |
+| Done | Public REST API — 7 endpoints (`/api/v1/*`) for posts, search, collections, and scraping |
+| Done | API key management — generate, revoke, and rotate keys from the dashboard |
+| Done | Rate-limited access — 100 req/min per key with standard `X-RateLimit-*` headers |
+| Done | MCP Server — AI agents (Claude Desktop, Cursor) can query your knowledge base via Model Context Protocol |
 | Planned | Dark mode toggle |
 | Planned | Favorites-only filter view |
 | Planned | Export to CSV & Markdown |
 | Planned | Mobile-responsive improvements |
-
-### Tier 2 — Pro (Subscription)
-
-Advanced features for creators, researchers, and developers who want to get more out of their saved content:
-
-| Status | Feature |
-|--------|---------|
-| Done | **Public REST API** — 7 endpoints (`/api/v1/*`) for posts, search, collections, and scraping |
-| Done | **API key management** — generate, revoke, and rotate keys from the dashboard |
-| Done | **Rate-limited access** — 100 req/min per key with standard `X-RateLimit-*` headers |
 | Planned | AI auto-tagging on save |
 | Planned | AI-generated post summaries |
 | Planned | Related posts suggestions |
@@ -170,7 +203,6 @@ Advanced features for creators, researchers, and developers who want to get more
 | Planned | Public shareable collections |
 | Planned | Reading stats dashboard |
 | Planned | Higher API rate limits |
-| Planned | Priority support |
 
 ## License
 

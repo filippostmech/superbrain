@@ -425,6 +425,87 @@ export default function DevelopersPage() {
               </div>
             </div>
           </section>
+          <section>
+            <h2 className="text-2xl font-semibold text-foreground mb-3" data-testid="text-section-mcp">
+              MCP Server (AI Agent Integration)
+            </h2>
+            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+              superBrain includes an MCP (Model Context Protocol) server that lets AI agents like
+              Claude Desktop, Cursor, and custom agents query your saved knowledge base directly.
+              Your reading history becomes a live, agent-queryable knowledge base.
+            </p>
+
+            <h3 className="text-sm font-semibold text-foreground mb-2">Available Tools</h3>
+            <div className="space-y-2 mb-6">
+              {[
+                { tool: "search_knowledge", desc: "Semantic search across your saved posts" },
+                { tool: "list_posts", desc: "List and filter posts by tags, platform, collection" },
+                { tool: "save_post", desc: "Save new content (text or URL) to your library" },
+                { tool: "scrape_url", desc: "Scrape a URL and return structured content" },
+                { tool: "list_collections", desc: "List your collections" },
+              ].map((item) => (
+                <div key={item.tool} className="flex gap-2 text-sm">
+                  <code className="font-mono text-xs bg-muted px-1.5 py-0.5 rounded shrink-0">{item.tool}</code>
+                  <span className="text-muted-foreground">{item.desc}</span>
+                </div>
+              ))}
+            </div>
+
+            <h3 className="text-sm font-semibold text-foreground mb-2">Setup with Claude Desktop</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+              Add the following to your Claude Desktop configuration file
+              (<code className="font-mono text-xs bg-muted px-1 py-0.5 rounded">claude_desktop_config.json</code>):
+            </p>
+            <CodeBlock>{`{
+  "mcpServers": {
+    "superbrain": {
+      "command": "npx",
+      "args": ["tsx", "mcp/server.ts"],
+      "cwd": "/path/to/superbrain",
+      "env": {
+        "SUPERBRAIN_API_KEY": "sb_your_api_key_here",
+        "SUPERBRAIN_URL": "${BASE_URL}"
+      }
+    }
+  }
+}`}</CodeBlock>
+
+            <h3 className="text-sm font-semibold text-foreground mt-6 mb-2">Setup with Cursor</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+              Add the server to your Cursor MCP settings:
+            </p>
+            <CodeBlock>{`{
+  "mcpServers": {
+    "superbrain": {
+      "command": "npx",
+      "args": ["tsx", "mcp/server.ts"],
+      "cwd": "/path/to/superbrain",
+      "env": {
+        "SUPERBRAIN_API_KEY": "sb_your_api_key_here",
+        "SUPERBRAIN_URL": "${BASE_URL}"
+      }
+    }
+  }
+}`}</CodeBlock>
+
+            <h3 className="text-sm font-semibold text-foreground mt-6 mb-2">Environment Variables</h3>
+            <div className="space-y-2">
+              {[
+                { variable: "SUPERBRAIN_API_KEY", desc: "Required. Your API key from the API Keys page." },
+                { variable: "SUPERBRAIN_URL", desc: `Optional. Defaults to ${BASE_URL}. Set this if self-hosting.` },
+              ].map((item) => (
+                <div key={item.variable} className="flex gap-2 text-sm">
+                  <code className="font-mono text-xs bg-muted px-1.5 py-0.5 rounded shrink-0">{item.variable}</code>
+                  <span className="text-muted-foreground">{item.desc}</span>
+                </div>
+              ))}
+            </div>
+
+            <p className="text-sm text-muted-foreground leading-relaxed mt-6">
+              Once configured, you can ask your AI agent things like "What did I read last month about
+              AI pricing models?" and it will search your superBrain library directly.
+            </p>
+          </section>
         </motion.div>
       </main>
     </div>
