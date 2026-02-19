@@ -33,6 +33,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { PostListItem } from "@/components/PostListItem";
+import { ExportDropdown } from "@/components/ExportDropdown";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -159,6 +160,11 @@ export default function Dashboard() {
                     Extension
                   </Button>
                 </Link>
+                <ExportDropdown
+                  activeTab={activeTab}
+                  selectedTag={selectedTag}
+                  selectedCollectionId={selectedCollectionId}
+                />
                 <BulkImportDialog />
                 <CreatePostDialog />
               </div>

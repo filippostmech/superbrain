@@ -1,5 +1,19 @@
 [
   {
+    "date": "February 19, 2026",
+    "version": "0.11.0",
+    "entries": [
+      {
+        "category": "New",
+        "items": [
+          "Export to CSV — download all your saved posts as a spreadsheet-ready CSV file",
+          "Export to Markdown — download your posts as a beautifully formatted Markdown document",
+          "Filter-aware export — exports respect your current filters (favorites, tags, collections, platform) so you export exactly what you see"
+        ]
+      }
+    ]
+  },
+  {
     "date": "February 18, 2026",
     "version": "0.10.0",
     "entries": [

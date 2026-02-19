@@ -109,6 +109,129 @@ export async function registerRoutes(
     }
   });
 
+  // Export Endpoints (must be before /api/posts/:id to avoid matching "export" as an id)
+  app.get("/api/posts/export/csv", requireAuth, async (req, res) => {
+    try {
+      const userId = getUserId(req);
+      const filters: any = {};
+      if (req.query.tags) filters.tags = req.query.tags as string;
+      if (req.query.platform) filters.platform = req.query.platform as string;
+
+      let exportPosts: any[];
+      if (req.query.collectionId) {
+        const collectionId = Number(req.query.collectionId);
+        const collection = await storage.getCollection(collectionId);
+        if (!collection || collection.userId !== userId) {
+          return res.status(404).json({ message: "Collection not found" });
+        }
+        exportPosts = await storage.getCollectionPosts(collectionId);
+      } else {
+        exportPosts = await storage.getPosts(userId, filters);
+      }
+
+      if (req.query.favorites === "true") {
+        exportPosts = exportPosts.filter((p: any) => p.isFavorite);
+      }
+
+      const escapeCSV = (val: string | null | undefined): string => {
+        if (val == null) return "";
+        const s = String(val);
+        if (s.includes(",") || s.includes('"') || s.includes("\n")) {
+          return `"${s.replace(/"/g, '""')}"`;
+        }
+        return s;
+      };
+
+      const headers = ["id", "content", "summary", "authorName", "authorUrl", "originalUrl", "platform", "tags", "isFavorite", "publishedAt", "createdAt"];
+      const rows = exportPosts.map((p: any) =>
+        headers.map((h) => {
+          if (h === "tags") return escapeCSV((p.tags || []).join("; "));
+          if (h === "isFavorite") return p.isFavorite ? "true" : "false";
+          if (h === "publishedAt" || h === "createdAt") return escapeCSV(p[h] ? new Date(p[h]).toISOString() : "");
+          return escapeCSV(p[h]);
+        }).join(",")
+      );
+
+      const csv = [headers.join(","), ...rows].join("\n");
+
+      res.setHeader("Content-Type", "text/csv; charset=utf-8");
+      res.setHeader("Content-Disposition", `attachment; filename="superbrain-export-${new Date().toISOString().slice(0, 10)}.csv"`);
+      res.send(csv);
+    } catch (e) {
+      console.error("Export CSV error:", e);
+      res.status(500).json({ message: "Failed to export posts" });
+    }
+  });
+
+  app.get("/api/posts/export/markdown", requireAuth, async (req, res) => {
+    try {
+      const userId = getUserId(req);
+      const filters: any = {};
+      if (req.query.tags) filters.tags = req.query.tags as string;
+      if (req.query.platform) filters.platform = req.query.platform as string;
+
+      let exportPosts: any[];
+      if (req.query.collectionId) {
+        const collectionId = Number(req.query.collectionId);
+        const collection = await storage.getCollection(collectionId);
+        if (!collection || collection.userId !== userId) {
+          return res.status(404).json({ message: "Collection not found" });
+        }
+        exportPosts = await storage.getCollectionPosts(collectionId);
+      } else {
+        exportPosts = await storage.getPosts(userId, filters);
+      }
+
+      if (req.query.favorites === "true") {
+        exportPosts = exportPosts.filter((p: any) => p.isFavorite);
+      }
+
+      const lines: string[] = [];
+      lines.push("# superBrain Export");
+      lines.push(`*Exported on ${new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}*`);
+      lines.push(`*${exportPosts.length} post${exportPosts.length === 1 ? "" : "s"}*`);
+      lines.push("");
+      lines.push("---");
+      lines.push("");
+
+      exportPosts.forEach((p: any, i: number) => {
+        const title = p.summary || p.authorName || `Post #${p.id}`;
+        lines.push(`## ${i + 1}. ${title}`);
+        lines.push("");
+
+        const meta: string[] = [];
+        if (p.authorName) meta.push(`**Author:** ${p.authorName}`);
+        if (p.platform) meta.push(`**Platform:** ${p.platform}`);
+        if (p.publishedAt) meta.push(`**Published:** ${new Date(p.publishedAt).toLocaleDateString()}`);
+        if (p.originalUrl) meta.push(`**URL:** [${p.originalUrl}](${p.originalUrl})`);
+        if ((p.tags || []).length > 0) meta.push(`**Tags:** ${p.tags.join(", ")}`);
+        if (p.isFavorite) meta.push(`**Favorited**`);
+
+        if (meta.length > 0) {
+          lines.push(meta.join(" | "));
+          lines.push("");
+        }
+
+        if (p.content) {
+          lines.push(p.content);
+          lines.push("");
+        }
+
+        lines.push("---");
+        lines.push("");
+      });
+
+      const markdown = lines.join("\n");
+
+      res.setHeader("Content-Type", "text/markdown; charset=utf-8");
+      res.setHeader("Content-Disposition", `attachment; filename="superbrain-export-${new Date().toISOString().slice(0, 10)}.md"`);
+      res.send(markdown);
+    } catch (e) {
+      console.error("Export Markdown error:", e);
+      res.status(500).json({ message: "Failed to export posts" });
+    }
+  });
+
   app.get(api.posts.get.path, requireAuth, async (req, res) => {
     const post = await storage.getPost(Number(req.params.id));
     if (!post || post.userId !== getUserId(req)) {

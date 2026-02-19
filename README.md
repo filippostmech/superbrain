@@ -193,7 +193,7 @@ Please make sure your code follows the existing style and includes relevant test
 | Done | MCP Server — AI agents (Claude Desktop, Cursor) can query your knowledge base via Model Context Protocol |
 | Done | Dark mode toggle |
 | Done | Favorites-only filter view |
-| Planned | Export to CSV & Markdown |
+| Done | Export to CSV & Markdown — download posts with current filters applied |
 | Planned | Mobile-responsive improvements |
 | Planned | AI auto-tagging on save |
 | Planned | AI-generated post summaries |
