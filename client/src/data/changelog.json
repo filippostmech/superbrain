@@ -1,6 +1,22 @@
 [
   {
     "date": "February 19, 2026",
+    "version": "0.12.0",
+    "entries": [
+      {
+        "category": "New",
+        "items": [
+          "Knowledge Graph — interactive force-directed visualization of entities (people, companies, topics, technologies) extracted from your saved posts",
+          "AI entity extraction — OpenAI-powered pipeline automatically identifies and links entities when you save a post",
+          "Entity detail panel — click any node to see connected entities, related posts, and descriptions",
+          "Backfill analyzer — process all existing posts to build your knowledge graph retroactively",
+          "Search and filter — search entities by name and filter by type (people, companies, topics, technologies)"
+        ]
+      }
+    ]
+  },
+  {
+    "date": "February 19, 2026",
     "version": "0.11.0",
     "entries": [
       {

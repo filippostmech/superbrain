@@ -16,6 +16,7 @@ import TermsPage from "@/pages/TermsPage";
 import PrivacyPage from "@/pages/PrivacyPage";
 import DevelopersPage from "@/pages/DevelopersPage";
 import ApiKeysPage from "@/pages/ApiKeysPage";
+import KnowledgeGraphPage from "@/pages/KnowledgeGraphPage";
 
 function Router() {
   const { user, isLoading } = useAuth();
@@ -41,6 +42,7 @@ function Router() {
           <Route path="/" component={Dashboard} />
           <Route path="/extension" component={ExtensionPage} />
           <Route path="/api-keys" component={ApiKeysPage} />
+          <Route path="/knowledge-graph" component={KnowledgeGraphPage} />
         </>
       )}
       <Route component={NotFound} />

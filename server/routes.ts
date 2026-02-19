@@ -8,6 +8,7 @@ import { registerChatRoutes } from "./replit_integrations/chat";
 import OpenAI from "openai";
 import { scrapePost, detectPlatform } from "./scraper";
 import { createV1Router, generateApiKey } from "./apiV1";
+import { processPostEntities, backfillEntities, getKnowledgeGraph, getEntityDetail, getGraphStats } from "./knowledgeGraph";
 
 // Initialize OpenAI for our custom search/RAG endpoint
 const openai = new OpenAI({
@@ -97,6 +98,11 @@ export async function registerRoutes(
       }
 
       const post = await storage.createPost(postData);
+
+      processPostEntities(post).catch(err => {
+        console.error("Background entity extraction failed:", err);
+      });
+
       res.status(201).json(post);
     } catch (err) {
       if (err instanceof z.ZodError) {
@@ -519,6 +525,50 @@ export async function registerRoutes(
     } catch (e) {
         console.error("AI Search Error:", e);
         res.status(500).json({ message: "Failed to perform AI search" });
+    }
+  });
+
+  // Knowledge Graph Endpoints
+  app.get("/api/knowledge-graph", requireAuth, async (req, res) => {
+    try {
+      const graph = await getKnowledgeGraph(getUserId(req));
+      res.json(graph);
+    } catch (e) {
+      console.error("Get knowledge graph error:", e);
+      res.status(500).json({ message: "Failed to load knowledge graph" });
+    }
+  });
+
+  app.get("/api/knowledge-graph/stats", requireAuth, async (req, res) => {
+    try {
+      const stats = await getGraphStats(getUserId(req));
+      res.json(stats);
+    } catch (e) {
+      console.error("Get graph stats error:", e);
+      res.status(500).json({ message: "Failed to load graph stats" });
+    }
+  });
+
+  app.get("/api/knowledge-graph/entities/:id", requireAuth, async (req, res) => {
+    try {
+      const detail = await getEntityDetail(Number(req.params.id), getUserId(req));
+      if (!detail) {
+        return res.status(404).json({ message: "Entity not found" });
+      }
+      res.json(detail);
+    } catch (e) {
+      console.error("Get entity detail error:", e);
+      res.status(500).json({ message: "Failed to load entity detail" });
+    }
+  });
+
+  app.post("/api/knowledge-graph/backfill", requireAuth, async (req, res) => {
+    try {
+      const result = await backfillEntities(getUserId(req));
+      res.json(result);
+    } catch (e) {
+      console.error("Backfill error:", e);
+      res.status(500).json({ message: "Failed to backfill entities" });
     }
   });
 

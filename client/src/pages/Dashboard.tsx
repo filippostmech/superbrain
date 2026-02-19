@@ -24,7 +24,8 @@ import {
   PanelRightClose,
   BookOpen,
   Sun,
-  Moon
+  Moon,
+  Network
 } from "lucide-react";
 import { Link } from "wouter";
 import { useTheme } from "@/hooks/use-theme";
@@ -142,6 +143,12 @@ export default function Dashboard() {
                 <p className="text-muted-foreground mt-1">Manage and organize your saved content.</p>
               </div>
               <div className="flex items-center gap-2 flex-wrap">
+                <Link href="/knowledge-graph">
+                  <Button variant="outline" className="rounded-full" data-testid="button-knowledge-graph-page">
+                    <Network className="w-4 h-4 mr-2" />
+                    Knowledge Graph
+                  </Button>
+                </Link>
                 <Link href="/developers">
                   <Button variant="outline" className="rounded-full" data-testid="button-developers-page">
                     <BookOpen className="w-4 h-4 mr-2" />

@@ -38,6 +38,7 @@ superBrain is an open-source web app that acts as a personal knowledge base for 
 - **Grid & List Views** — Toggle between card grid and compact list layouts
 - **Favorites** — Mark posts as favorites for quick access
 - **Platform Badges** — Color-coded badges for LinkedIn (blue), Substack (orange), and other sources
+- **Knowledge Graph** — AI-powered entity extraction that maps people, companies, topics, and technologies from your posts into an interactive force-directed graph visualization with search, filtering, and relationship exploration
 - **Public REST API** — Programmatic access to your data via API keys (Pro)
 
 ## Tech Stack
@@ -102,6 +103,7 @@ server/                  Express backend
   index.ts               HTTP server entry point
   routes.ts              API routes (CRUD, scrape, import, AI, collections)
   apiV1.ts               Public REST API v1 (Bearer token auth, rate limiting)
+  knowledgeGraph.ts       Entity extraction & knowledge graph API
   storage.ts             Database storage interface
   scraper.ts             URL scraping with Cheerio
 
@@ -194,6 +196,7 @@ Please make sure your code follows the existing style and includes relevant test
 | Done | Dark mode toggle |
 | Done | Favorites-only filter view |
 | Done | Export to CSV & Markdown — download posts with current filters applied |
+| Done | Knowledge Graph — AI entity extraction with interactive force-directed visualization |
 | Planned | Mobile-responsive improvements |
 | Planned | AI auto-tagging on save |
 | Planned | AI-generated post summaries |
