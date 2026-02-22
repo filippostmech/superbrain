@@ -23,6 +23,12 @@
 
 ---
 
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=KINeVhkw-x4">
+    <img src="https://img.youtube.com/vi/KINeVhkw-x4/0.jpg" alt="Video Title">
+  </a>
+</p>
+
 ## What is superBrain?
 
 superBrain is an open-source web app that acts as a personal knowledge base for your professional reading. Stop losing valuable insights from LinkedIn posts and Substack articles — save them in one place, organize with tags and collections, and use AI-powered search to find exactly what you need.
