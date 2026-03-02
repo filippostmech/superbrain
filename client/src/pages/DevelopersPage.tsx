@@ -8,9 +8,12 @@ import { useTheme } from "@/hooks/use-theme";
 
 function CodeBlock({ children }: { children: string }) {
   return (
-    <pre className="bg-muted rounded-md p-4 overflow-x-auto text-sm font-mono leading-relaxed">
-      <code>{children}</code>
-    </pre>
+    <div className="relative">
+      <pre className="bg-muted rounded-md p-4 overflow-x-auto text-sm font-mono leading-relaxed">
+        <code>{children}</code>
+      </pre>
+      <div className="absolute right-0 top-0 bottom-0 w-8 rounded-r-md pointer-events-none bg-gradient-to-l from-muted to-transparent sm:hidden" />
+    </div>
   );
 }
 
@@ -274,7 +277,7 @@ export default function DevelopersPage() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border/50 sticky top-0 z-[1000] bg-background/95 backdrop-blur">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center gap-4 flex-wrap">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center gap-4 flex-wrap">
           <Link href="/">
             <Button variant="ghost" size="icon" data-testid="button-back-home">
               <ArrowLeft className="w-5 h-5" />
@@ -289,8 +292,8 @@ export default function DevelopersPage() {
           <div className="ml-auto flex items-center gap-2">
             <Link href="/api-keys">
               <Button variant="outline" size="sm" data-testid="button-manage-api-keys">
-                <Key className="w-4 h-4 mr-2" />
-                Manage API Keys
+                <Key className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Manage API Keys</span>
               </Button>
             </Link>
             <Button variant="ghost" size="icon" onClick={toggleTheme} data-testid="button-theme-toggle">
@@ -300,7 +303,7 @@ export default function DevelopersPage() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-6 py-12">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}

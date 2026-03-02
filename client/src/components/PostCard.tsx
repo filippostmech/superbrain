@@ -75,10 +75,11 @@ export function PostCard({ post }: { post: Post }) {
             variant="ghost"
             size="icon"
             className={cn(
-              "h-8 w-8 rounded-full transition-colors",
-              post.isFavorite ? "text-red-500 hover:text-red-600 bg-red-50" : "text-muted-foreground hover:text-red-500"
+              "rounded-full transition-colors",
+              post.isFavorite ? "text-red-500 bg-red-50" : "text-muted-foreground"
             )}
             onClick={toggleFavorite}
+            data-testid={`button-favorite-${post.id}`}
           >
             <Heart className={cn("w-4 h-4", post.isFavorite && "fill-current")} />
           </Button>
@@ -141,10 +142,10 @@ export function PostCard({ post }: { post: Post }) {
           </button>
         </CardContent>
 
-        <CardFooter className="px-6 py-4 bg-muted/20 border-t border-border/40 flex justify-between items-center mt-auto">
-          <div className="flex gap-2">
+        <CardFooter className="px-6 py-4 bg-muted/20 border-t border-border/40 flex justify-between gap-2 items-center mt-auto">
+          <div className="flex gap-2 flex-wrap">
             {post.originalUrl && (
-              <Button variant="ghost" size="sm" className="h-8 rounded-lg text-xs" asChild>
+              <Button variant="ghost" size="sm" className="rounded-lg text-xs" asChild data-testid={`link-original-${post.id}`}>
                 <a href={post.originalUrl} target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="w-3 h-3 mr-2" />
                   Original
@@ -156,7 +157,7 @@ export function PostCard({ post }: { post: Post }) {
 
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Button variant="ghost" size="icon" className="rounded-lg text-muted-foreground sm:opacity-0 sm:group-hover:opacity-100 transition-opacity" data-testid={`button-delete-${post.id}`}>
                 <Trash2 className="w-4 h-4" />
               </Button>
             </AlertDialogTrigger>

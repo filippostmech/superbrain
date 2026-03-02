@@ -73,7 +73,7 @@ export default function LandingPage() {
           <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-indigo-50 rounded-full blur-[100px] opacity-60" />
         </div>
 
-        <div className="flex-1 flex flex-col justify-center p-8 lg:p-16 xl:p-24">
+        <div className="flex-1 flex flex-col justify-center p-4 sm:p-8 lg:p-16 xl:p-24">
         <div className="relative z-10 max-w-2xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -92,7 +92,7 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <h1 className="text-5xl lg:text-7xl font-bold tracking-tight text-foreground mb-6 leading-[1.1]" data-testid="text-hero-title">
+            <h1 className="text-3xl sm:text-5xl lg:text-7xl font-bold tracking-tight text-foreground mb-6 leading-[1.1]" data-testid="text-hero-title">
               Your <TypewriterText /><br />
               Second Brain.
             </h1>
@@ -128,7 +128,7 @@ export default function LandingPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8, duration: 1 }}
-            className="mt-20 grid grid-cols-3 gap-8 border-t border-border/50 pt-8"
+            className="mt-20 grid grid-cols-1 sm:grid-cols-3 gap-8 border-t border-border/50 pt-8"
           >
             <div>
               <div className="mb-2 p-2 bg-blue-50 w-fit rounded-lg"><Bookmark className="w-5 h-5 text-primary" /></div>
@@ -149,7 +149,7 @@ export default function LandingPage() {
         </div>
         </div>
 
-        <footer className="relative z-10 border-t border-border/30 py-4 px-8">
+        <footer className="relative z-10 border-t border-border/30 py-4 px-4 sm:px-8">
           <div className="max-w-2xl mx-auto flex items-center justify-between flex-wrap gap-4 text-xs text-muted-foreground">
             <span>superBrain</span>
             <div className="flex items-center gap-4 flex-wrap">

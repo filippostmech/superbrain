@@ -352,7 +352,6 @@ export default function ApiKeysPage() {
                   {apiKey.isActive && (
                     <Button
                       variant="outline"
-                      size="sm"
                       className="text-destructive shrink-0"
                       onClick={() => setRevokeTarget(apiKey)}
                       data-testid={`button-revoke-key-${apiKey.id}`}

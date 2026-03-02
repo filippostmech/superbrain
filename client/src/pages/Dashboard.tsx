@@ -25,9 +25,18 @@ import {
   BookOpen,
   Sun,
   Moon,
-  Network
+  Network,
+  MoreHorizontal,
+  FileText,
+  FileSpreadsheet
 } from "lucide-react";
-import { Link } from "wouter";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Link, useLocation } from "wouter";
 import { useTheme } from "@/hooks/use-theme";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -35,6 +44,72 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { PostListItem } from "@/components/PostListItem";
 import { ExportDropdown } from "@/components/ExportDropdown";
+
+function MobileMoreMenu({ activeTab, selectedTag, selectedCollectionId }: {
+  activeTab: string;
+  selectedTag: string | null;
+  selectedCollectionId: number | null;
+}) {
+  const [, navigate] = useLocation();
+
+  const handleExport = async (format: "csv" | "markdown") => {
+    const params = new URLSearchParams();
+    if (activeTab === "favorites") params.set("favorites", "true");
+    if (selectedTag) params.set("tags", selectedTag);
+    if (selectedCollectionId) params.set("collectionId", String(selectedCollectionId));
+    const qs = params.toString();
+    const url = `/api/posts/export/${format}${qs ? `?${qs}` : ""}`;
+    const res = await fetch(url, { credentials: "include" });
+    if (!res.ok) return;
+    const blob = await res.blob();
+    const downloadUrl = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = downloadUrl;
+    const disposition = res.headers.get("Content-Disposition") || "";
+    const filenameMatch = disposition.match(/filename="?(.+?)"?$/);
+    a.download = filenameMatch?.[1] || `superbrain-export.${format === "csv" ? "csv" : "md"}`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(downloadUrl);
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="icon" className="rounded-full md:hidden" data-testid="button-mobile-more-menu">
+          <MoreHorizontal className="w-4 h-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={() => navigate("/knowledge-graph")} data-testid="menu-knowledge-graph">
+          <Network className="w-4 h-4 mr-2" />
+          Knowledge Graph
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate("/developers")} data-testid="menu-api-docs">
+          <BookOpen className="w-4 h-4 mr-2" />
+          API Docs
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate("/api-keys")} data-testid="menu-api-keys">
+          <Key className="w-4 h-4 mr-2" />
+          API Keys
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate("/extension")} data-testid="menu-extension">
+          <Chrome className="w-4 h-4 mr-2" />
+          Extension
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleExport("csv")} data-testid="menu-export-csv">
+          <FileSpreadsheet className="w-4 h-4 mr-2" />
+          Export as CSV
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleExport("markdown")} data-testid="menu-export-markdown">
+          <FileText className="w-4 h-4 mr-2" />
+          Export as Markdown
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -54,6 +129,7 @@ export default function Dashboard() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [selectedCollectionId, setSelectedCollectionId] = useState<number | null>(null);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const { data: collectionPosts } = useCollectionPosts(selectedCollectionId);
 
   const allTags = Array.from(new Set((posts || []).flatMap(p => p.tags || []))).sort();
@@ -77,9 +153,9 @@ export default function Dashboard() {
             <span className="hidden sm:inline">superBrain</span>
           </div>
           
-          <div className="h-6 w-px bg-border mx-2 hidden sm:block" />
+          <div className="h-6 w-px bg-border mx-2 hidden md:block" />
           
-          <div className="relative w-full max-w-md hidden sm:block">
+          <div className="relative w-full max-w-md hidden md:block">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input 
               placeholder="Search library..." 
@@ -91,6 +167,16 @@ export default function Dashboard() {
         </div>
 
         <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
+            data-testid="button-mobile-search-toggle"
+          >
+            <Search className="w-4 h-4" />
+          </Button>
+
           <Button 
             variant="ghost" 
             size="sm" 
@@ -130,6 +216,22 @@ export default function Dashboard() {
         </div>
       </header>
 
+      {mobileSearchOpen && (
+        <div className="md:hidden border-b border-border/60 bg-background px-4 py-2 shrink-0">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="Search library..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              className="pl-9 h-10 rounded-full bg-muted/50 border-transparent focus:bg-background focus:border-primary/20 transition-all w-full"
+              autoFocus
+              data-testid="input-mobile-search"
+            />
+          </div>
+        </div>
+      )}
+
       {/* Main Layout */}
       <div className="flex flex-1 overflow-hidden relative">
         {/* Main Content Area */}
@@ -143,31 +245,38 @@ export default function Dashboard() {
                 <p className="text-muted-foreground mt-1">Manage and organize your saved content.</p>
               </div>
               <div className="flex items-center gap-2 flex-wrap">
-                <Link href="/knowledge-graph">
-                  <Button variant="outline" className="rounded-full" data-testid="button-knowledge-graph-page">
-                    <Network className="w-4 h-4 mr-2" />
-                    Knowledge Graph
-                  </Button>
-                </Link>
-                <Link href="/developers">
-                  <Button variant="outline" className="rounded-full" data-testid="button-developers-page">
-                    <BookOpen className="w-4 h-4 mr-2" />
-                    API Docs
-                  </Button>
-                </Link>
-                <Link href="/api-keys">
-                  <Button variant="outline" className="rounded-full" data-testid="button-api-keys-page">
-                    <Key className="w-4 h-4 mr-2" />
-                    API Keys
-                  </Button>
-                </Link>
-                <Link href="/extension">
-                  <Button variant="outline" className="rounded-full" data-testid="button-extension-page">
-                    <Chrome className="w-4 h-4 mr-2" />
-                    Extension
-                  </Button>
-                </Link>
-                <ExportDropdown
+                <div className="hidden md:contents">
+                  <Link href="/knowledge-graph">
+                    <Button variant="outline" className="rounded-full" data-testid="button-knowledge-graph-page">
+                      <Network className="w-4 h-4 mr-2" />
+                      Knowledge Graph
+                    </Button>
+                  </Link>
+                  <Link href="/developers">
+                    <Button variant="outline" className="rounded-full" data-testid="button-developers-page">
+                      <BookOpen className="w-4 h-4 mr-2" />
+                      API Docs
+                    </Button>
+                  </Link>
+                  <Link href="/api-keys">
+                    <Button variant="outline" className="rounded-full" data-testid="button-api-keys-page">
+                      <Key className="w-4 h-4 mr-2" />
+                      API Keys
+                    </Button>
+                  </Link>
+                  <Link href="/extension">
+                    <Button variant="outline" className="rounded-full" data-testid="button-extension-page">
+                      <Chrome className="w-4 h-4 mr-2" />
+                      Extension
+                    </Button>
+                  </Link>
+                  <ExportDropdown
+                    activeTab={activeTab}
+                    selectedTag={selectedTag}
+                    selectedCollectionId={selectedCollectionId}
+                  />
+                </div>
+                <MobileMoreMenu
                   activeTab={activeTab}
                   selectedTag={selectedTag}
                   selectedCollectionId={selectedCollectionId}
@@ -178,13 +287,13 @@ export default function Dashboard() {
             </div>
 
             {/* Filters */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between gap-2 mb-6">
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-auto">
                 <TabsList className="bg-muted/50 p-1 rounded-full border border-border/50">
-                  <TabsTrigger value="all" className="rounded-full px-4 text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                  <TabsTrigger value="all" className="rounded-full px-4 text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm" data-testid="tab-all-posts">
                     All Posts
                   </TabsTrigger>
-                  <TabsTrigger value="favorites" className="rounded-full px-4 text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                  <TabsTrigger value="favorites" className="rounded-full px-4 text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm" data-testid="tab-favorites">
                     Favorites
                   </TabsTrigger>
                 </TabsList>
@@ -219,11 +328,11 @@ export default function Dashboard() {
             </div>
 
             {allTags.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mb-6" data-testid="tag-filter-bar">
+              <div className="flex overflow-x-auto gap-1.5 mb-6 pb-1 scrollbar-hide" data-testid="tag-filter-bar">
                 <Button
                   variant={selectedTag === null ? "default" : "outline"}
                   size="sm"
-                  className="rounded-full text-xs"
+                  className="rounded-full text-xs shrink-0"
                   onClick={() => setSelectedTag(null)}
                   data-testid="button-filter-all-tags"
                 >
@@ -234,7 +343,7 @@ export default function Dashboard() {
                     key={tag}
                     variant={selectedTag === tag ? "default" : "outline"}
                     size="sm"
-                    className="rounded-full text-xs"
+                    className="rounded-full text-xs shrink-0"
                     onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
                     data-testid={`button-filter-tag-${tag}`}
                   >

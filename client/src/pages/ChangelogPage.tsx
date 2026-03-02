@@ -39,7 +39,7 @@ export default function ChangelogPage() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border/50 sticky top-0 z-[1000] bg-background/95 backdrop-blur">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <Link href="/">
               <Button variant="ghost" size="icon" data-testid="button-back-home">
@@ -54,7 +54,7 @@ export default function ChangelogPage() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-6 py-12">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -71,7 +71,7 @@ export default function ChangelogPage() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.08 }}
-              className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 md:gap-8 py-10 border-t border-border/40"
+              className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 md:gap-8 py-6 sm:py-10 border-t border-border/40"
               data-testid={`changelog-entry-${release.version}`}
             >
               <div className="flex flex-col gap-1.5">

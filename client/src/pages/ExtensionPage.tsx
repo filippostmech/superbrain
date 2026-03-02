@@ -65,7 +65,7 @@ export default function ExtensionPage() {
       </header>
 
       <main className="max-w-3xl mx-auto p-4 sm:p-6 lg:p-8">
-        <div className="text-center mb-10">
+        <div className="text-center mb-6 sm:mb-10">
           <div className="inline-flex items-center justify-center bg-primary/10 p-4 rounded-2xl mb-4">
             <Chrome className="w-10 h-10 text-primary" />
           </div>

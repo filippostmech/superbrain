@@ -90,6 +90,14 @@
   font-family: var(--font-serif);
 }
 
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* Custom Scrollbar for the Chat Sidebar */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;

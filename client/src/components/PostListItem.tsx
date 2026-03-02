@@ -61,7 +61,7 @@ export function PostListItem({ post }: { post: Post }) {
       >
         <div className="flex items-start gap-4 p-4">
           {post.imageUrl && (
-            <div className="shrink-0 rounded-lg overflow-hidden bg-muted/30 border border-border/40 w-20 h-20">
+            <div className="shrink-0 rounded-lg overflow-hidden bg-muted/30 border border-border/40 w-20 h-20 hidden sm:block">
               <img
                 src={post.imageUrl}
                 alt="Post preview"
@@ -137,7 +137,7 @@ export function PostListItem({ post }: { post: Post }) {
               variant="ghost"
               size="icon"
               className={cn(
-                "h-8 w-8 rounded-full transition-colors",
+                "rounded-full transition-colors",
                 post.isFavorite ? "text-red-500 bg-red-50" : "text-muted-foreground"
               )}
               onClick={toggleFavorite}
@@ -149,7 +149,7 @@ export function PostListItem({ post }: { post: Post }) {
             <AddToCollectionPopover postId={post.id} />
 
             {post.originalUrl && (
-              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground" asChild>
+              <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground" asChild>
                 <a href={post.originalUrl} target="_blank" rel="noopener noreferrer" data-testid={`link-original-list-${post.id}`}>
                   <ExternalLink className="w-4 h-4" />
                 </a>
@@ -161,7 +161,7 @@ export function PostListItem({ post }: { post: Post }) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 rounded-full text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="rounded-full text-muted-foreground sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
                   data-testid={`button-delete-list-${post.id}`}
                 >
                   <Trash2 className="w-4 h-4" />

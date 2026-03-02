@@ -4,6 +4,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/hooks/use-theme";
 import { useToast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Link } from "wouter";
 import ForceGraph2D from "react-force-graph-2d";
 import { forceX, forceY } from "d3-force";
@@ -11,6 +12,12 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import {
   ArrowLeft,
   Bookmark,
@@ -106,10 +113,130 @@ const TYPE_LABELS: Record<string, string> = {
   technology: "Technologies",
 };
 
+function EntityDetailContent({
+  entityDetail,
+  detailLoading,
+  setSelectedEntityId,
+}: {
+  entityDetail: EntityDetail | undefined;
+  detailLoading: boolean;
+  setSelectedEntityId: (id: number | null) => void;
+}) {
+  if (detailLoading) {
+    return (
+      <div className="flex justify-center py-8">
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!entityDetail) return null;
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <div className="flex items-center gap-2 mb-1">
+          <Badge
+            variant="secondary"
+            style={{ backgroundColor: `${TYPE_COLORS[entityDetail.entity.type]}20`, color: TYPE_COLORS[entityDetail.entity.type] }}
+          >
+            {entityDetail.entity.type}
+          </Badge>
+          <span className="text-xs text-muted-foreground">
+            {entityDetail.entity.mentionCount} mention{entityDetail.entity.mentionCount !== 1 ? "s" : ""}
+          </span>
+        </div>
+        <h3 className="text-lg font-bold text-foreground" data-testid="text-entity-name">
+          {entityDetail.entity.name}
+        </h3>
+        {entityDetail.entity.description && (
+          <p className="text-sm text-muted-foreground mt-1">
+            {entityDetail.entity.description}
+          </p>
+        )}
+      </div>
+
+      {entityDetail.connectedEntities.length > 0 && (
+        <div>
+          <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+            Connected Entities
+          </h4>
+          <div className="flex flex-wrap gap-1.5">
+            {entityDetail.connectedEntities
+              .sort((a, b) => b.weight - a.weight)
+              .slice(0, 20)
+              .map(ce => (
+                <Button
+                  key={ce.id}
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full text-xs gap-1"
+                  onClick={() => setSelectedEntityId(ce.id)}
+                  data-testid={`button-connected-entity-${ce.id}`}
+                >
+                  <span
+                    className="w-2 h-2 rounded-full shrink-0"
+                    style={{ backgroundColor: TYPE_COLORS[ce.type] }}
+                  />
+                  {ce.name}
+                  {ce.weight > 1 && (
+                    <span className="text-muted-foreground">({ce.weight})</span>
+                  )}
+                </Button>
+              ))}
+          </div>
+        </div>
+      )}
+
+      {entityDetail.posts.length > 0 && (
+        <div>
+          <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+            Mentioned in {entityDetail.posts.length} post{entityDetail.posts.length !== 1 ? "s" : ""}
+          </h4>
+          <div className="space-y-2">
+            {entityDetail.posts.map(post => (
+              <Card key={post.id} className="p-3 hover-elevate cursor-default">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-foreground line-clamp-1">
+                      {post.summary || post.authorName || `Post #${post.id}`}
+                    </p>
+                    <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
+                      {post.content.slice(0, 150)}
+                    </p>
+                    <div className="flex items-center gap-2 mt-1.5">
+                      {post.platform && (
+                        <Badge variant="secondary" className="text-xs h-5">
+                          {post.platform}
+                        </Badge>
+                      )}
+                      {post.authorName && (
+                        <span className="text-xs text-muted-foreground">{post.authorName}</span>
+                      )}
+                    </div>
+                  </div>
+                  {post.originalUrl && (
+                    <a href={post.originalUrl} target="_blank" rel="noopener noreferrer" data-testid={`link-post-${post.id}`}>
+                      <Button variant="ghost" size="icon" className="shrink-0" data-testid={`button-open-post-${post.id}`}>
+                        <ExternalLink className="w-3 h-3" />
+                      </Button>
+                    </a>
+                  )}
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function KnowledgeGraphPage() {
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const graphRef = useRef<any>(null);
 
   const [selectedEntityId, setSelectedEntityId] = useState<number | null>(null);
@@ -295,14 +422,14 @@ export default function KnowledgeGraphPage() {
 
       <div className="flex flex-1 overflow-hidden">
         <div className="flex-1 relative overflow-hidden">
-          <div className="absolute top-4 left-4 z-10 flex flex-col gap-3">
+          <div className="absolute top-3 left-3 md:top-4 md:left-4 z-10 flex flex-col gap-2 md:gap-3 max-w-[calc(100%-6rem)] md:max-w-none">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 placeholder="Search entities..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 w-[220px] bg-background/90 backdrop-blur-sm border-border/60"
+                className="pl-9 w-full md:w-[220px] bg-background/90 backdrop-blur-sm border-border/60"
                 data-testid="input-search-entities"
               />
             </div>
@@ -325,18 +452,27 @@ export default function KnowledgeGraphPage() {
                       className="w-2 h-2 rounded-full shrink-0"
                       style={{ backgroundColor: TYPE_COLORS[type] }}
                     />
-                    {label} ({count})
+                    <span className="hidden sm:inline">{label}</span> ({count})
                   </Button>
                 );
               })}
             </div>
           </div>
 
-          <div className="absolute top-4 right-4 z-10 flex gap-2">
+          <div className="absolute top-3 right-3 md:top-4 md:right-4 z-10 flex flex-col md:flex-row gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              className="rounded-full bg-background/90 backdrop-blur-sm md:hidden"
+              onClick={handleZoomToFit}
+              data-testid="button-fit-to-screen-mobile"
+            >
+              <Maximize className="w-4 h-4" />
+            </Button>
             <Button
               variant="outline"
               size="sm"
-              className="rounded-full gap-2 bg-background/90 backdrop-blur-sm"
+              className="rounded-full gap-2 bg-background/90 backdrop-blur-sm hidden md:inline-flex"
               onClick={handleZoomToFit}
               data-testid="button-fit-to-screen"
             >
@@ -345,8 +481,22 @@ export default function KnowledgeGraphPage() {
             </Button>
             <Button
               variant="outline"
+              size="icon"
+              className="rounded-full bg-background/90 backdrop-blur-sm md:hidden"
+              onClick={() => backfillMutation.mutate()}
+              disabled={backfillMutation.isPending || (stats?.totalPostsPending === 0)}
+              data-testid="button-backfill-mobile"
+            >
+              {backfillMutation.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Zap className="w-4 h-4" />
+              )}
+            </Button>
+            <Button
+              variant="outline"
               size="sm"
-              className="rounded-full gap-2 bg-background/90 backdrop-blur-sm"
+              className="rounded-full gap-2 bg-background/90 backdrop-blur-sm hidden md:inline-flex"
               onClick={() => backfillMutation.mutate()}
               disabled={backfillMutation.isPending || (stats?.totalPostsPending === 0)}
               data-testid="button-backfill"
@@ -365,14 +515,14 @@ export default function KnowledgeGraphPage() {
           </div>
 
           {stats && (
-            <div className="absolute bottom-4 left-4 z-10 flex gap-2">
+            <div className="absolute bottom-3 left-3 md:bottom-4 md:left-4 z-10 flex flex-wrap gap-1.5 md:gap-2">
               <Badge variant="secondary" className="text-xs">
                 {stats.totalEntities} entities
               </Badge>
               <Badge variant="secondary" className="text-xs">
                 {stats.totalEdges} connections
               </Badge>
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" className="text-xs hidden sm:inline-flex">
                 {stats.totalPostsProcessed} posts analyzed
               </Badge>
             </div>
@@ -438,10 +588,10 @@ export default function KnowledgeGraphPage() {
           )}
         </div>
 
-        {selectedEntityId && (
+        {selectedEntityId && !isMobile && (
           <aside className="w-[380px] border-l border-border bg-card overflow-y-auto shrink-0 custom-scrollbar">
             <div className="p-4">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between gap-2 mb-4">
                 <h2 className="text-sm font-semibold text-foreground">Entity Detail</h2>
                 <Button
                   variant="ghost"
@@ -452,111 +602,30 @@ export default function KnowledgeGraphPage() {
                   <X className="w-4 h-4" />
                 </Button>
               </div>
-
-              {detailLoading ? (
-                <div className="flex justify-center py-8">
-                  <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                </div>
-              ) : entityDetail ? (
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <Badge
-                        variant="secondary"
-                        style={{ backgroundColor: `${TYPE_COLORS[entityDetail.entity.type]}20`, color: TYPE_COLORS[entityDetail.entity.type] }}
-                      >
-                        {entityDetail.entity.type}
-                      </Badge>
-                      <span className="text-xs text-muted-foreground">
-                        {entityDetail.entity.mentionCount} mention{entityDetail.entity.mentionCount !== 1 ? "s" : ""}
-                      </span>
-                    </div>
-                    <h3 className="text-lg font-bold text-foreground" data-testid="text-entity-name">
-                      {entityDetail.entity.name}
-                    </h3>
-                    {entityDetail.entity.description && (
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {entityDetail.entity.description}
-                      </p>
-                    )}
-                  </div>
-
-                  {entityDetail.connectedEntities.length > 0 && (
-                    <div>
-                      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                        Connected Entities
-                      </h4>
-                      <div className="flex flex-wrap gap-1.5">
-                        {entityDetail.connectedEntities
-                          .sort((a, b) => b.weight - a.weight)
-                          .slice(0, 20)
-                          .map(ce => (
-                            <Button
-                              key={ce.id}
-                              variant="outline"
-                              size="sm"
-                              className="rounded-full text-xs gap-1"
-                              onClick={() => setSelectedEntityId(ce.id)}
-                              data-testid={`button-connected-entity-${ce.id}`}
-                            >
-                              <span
-                                className="w-2 h-2 rounded-full shrink-0"
-                                style={{ backgroundColor: TYPE_COLORS[ce.type] }}
-                              />
-                              {ce.name}
-                              {ce.weight > 1 && (
-                                <span className="text-muted-foreground">({ce.weight})</span>
-                              )}
-                            </Button>
-                          ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {entityDetail.posts.length > 0 && (
-                    <div>
-                      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                        Mentioned in {entityDetail.posts.length} post{entityDetail.posts.length !== 1 ? "s" : ""}
-                      </h4>
-                      <div className="space-y-2">
-                        {entityDetail.posts.map(post => (
-                          <Card key={post.id} className="p-3 hover-elevate cursor-default">
-                            <div className="flex items-start justify-between gap-2">
-                              <div className="min-w-0 flex-1">
-                                <p className="text-sm font-medium text-foreground line-clamp-1">
-                                  {post.summary || post.authorName || `Post #${post.id}`}
-                                </p>
-                                <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
-                                  {post.content.slice(0, 150)}
-                                </p>
-                                <div className="flex items-center gap-2 mt-1.5">
-                                  {post.platform && (
-                                    <Badge variant="secondary" className="text-xs h-5">
-                                      {post.platform}
-                                    </Badge>
-                                  )}
-                                  {post.authorName && (
-                                    <span className="text-xs text-muted-foreground">{post.authorName}</span>
-                                  )}
-                                </div>
-                              </div>
-                              {post.originalUrl && (
-                                <a href={post.originalUrl} target="_blank" rel="noopener noreferrer" data-testid={`link-post-${post.id}`}>
-                                  <Button variant="ghost" size="icon" className="shrink-0" data-testid={`button-open-post-${post.id}`}>
-                                    <ExternalLink className="w-3 h-3" />
-                                  </Button>
-                                </a>
-                              )}
-                            </div>
-                          </Card>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : null}
+              <EntityDetailContent
+                entityDetail={entityDetail}
+                detailLoading={detailLoading}
+                setSelectedEntityId={setSelectedEntityId}
+              />
             </div>
           </aside>
+        )}
+
+        {isMobile && (
+          <Sheet open={!!selectedEntityId} onOpenChange={(open) => { if (!open) setSelectedEntityId(null); }}>
+            <SheetContent side="bottom" className="max-h-[70vh] overflow-y-auto rounded-t-xl">
+              <SheetHeader>
+                <SheetTitle>Entity Detail</SheetTitle>
+              </SheetHeader>
+              <div className="mt-4">
+                <EntityDetailContent
+                  entityDetail={entityDetail}
+                  detailLoading={detailLoading}
+                  setSelectedEntityId={setSelectedEntityId}
+                />
+              </div>
+            </SheetContent>
+          </Sheet>
         )}
       </div>
     </div>
