@@ -15,45 +15,70 @@ interface ParsedPost {
   tags?: string[];
 }
 
-function parseCSV(text: string): ParsedPost[] {
-  const lines = text.split("\n");
-  if (lines.length < 2) return [];
+function parseCSVRows(text: string): string[][] {
+  const rows: string[][] = [];
+  let current = "";
+  let inQuotes = false;
+  let row: string[] = [];
 
-  const headers = lines[0].split(",").map(h => h.trim().toLowerCase().replace(/"/g, ""));
-  const posts: ParsedPost[] = [];
-
-  for (let i = 1; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (!line) continue;
-
-    const values: string[] = [];
-    let current = "";
-    let inQuotes = false;
-    for (const char of line) {
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    if (inQuotes) {
       if (char === '"') {
-        inQuotes = !inQuotes;
-      } else if (char === "," && !inQuotes) {
-        values.push(current.trim());
+        if (i + 1 < text.length && text[i + 1] === '"') {
+          current += '"';
+          i++;
+        } else {
+          inQuotes = false;
+        }
+      } else {
+        current += char;
+      }
+    } else {
+      if (char === '"') {
+        inQuotes = true;
+      } else if (char === ",") {
+        row.push(current.trim());
         current = "";
+      } else if (char === "\n" || (char === "\r" && text[i + 1] === "\n")) {
+        row.push(current.trim());
+        current = "";
+        if (row.some(v => v !== "")) rows.push(row);
+        row = [];
+        if (char === "\r") i++;
       } else {
         current += char;
       }
     }
-    values.push(current.trim());
+  }
+  row.push(current.trim());
+  if (row.some(v => v !== "")) rows.push(row);
 
+  return rows;
+}
+
+function parseCSV(text: string): ParsedPost[] {
+  const rows = parseCSVRows(text);
+  if (rows.length < 2) return [];
+
+  const headers = rows[0].map(h => h.toLowerCase().replace(/"/g, ""));
+  const posts: ParsedPost[] = [];
+
+  for (let i = 1; i < rows.length; i++) {
+    const values = rows[i];
     const row: Record<string, string> = {};
     headers.forEach((h, idx) => {
       row[h] = values[idx] || "";
     });
 
-    const content = row["content"] || row["text"] || row["body"] || row["post"] || row["description"] || "";
+    const content = row["content"] || row["text"] || row["body"] || row["post"] || row["description"] || row["post text"] || "";
     if (!content) continue;
 
     posts.push({
       content,
-      originalUrl: row["url"] || row["link"] || row["originalurl"] || row["original_url"] || "",
+      originalUrl: row["url"] || row["link"] || row["originalurl"] || row["original_url"] || row["post link"] || "",
       authorName: row["author"] || row["authorname"] || row["author_name"] || row["name"] || "",
-      authorUrl: row["authorurl"] || row["author_url"] || row["profileurl"] || row["profile_url"] || "",
+      authorUrl: row["authorurl"] || row["author_url"] || row["profileurl"] || row["profile_url"] || row["profile"] || "",
       publishedAt: row["date"] || row["publishedat"] || row["published_at"] || row["timestamp"] || "",
       tags: row["tags"] ? row["tags"].split(";").map((t: string) => t.trim()).filter(Boolean) : [],
     });

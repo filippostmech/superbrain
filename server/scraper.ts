@@ -1,4 +1,70 @@
 import * as cheerio from "cheerio";
+import dns from "dns/promises";
+
+const BLOCKED_HOSTNAMES = new Set(["localhost", "localhost.localdomain"]);
+
+function isPrivateIPv4(parts: number[]): boolean {
+  if (parts[0] === 127) return true;
+  if (parts[0] === 10) return true;
+  if (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) return true;
+  if (parts[0] === 192 && parts[1] === 168) return true;
+  if (parts[0] === 169 && parts[1] === 254) return true;
+  if (parts[0] === 0) return true;
+  return false;
+}
+
+function isPrivateIP(ip: string): boolean {
+  if (ip === "::1" || ip === "::") return true;
+  if (ip.startsWith("fc") || ip.startsWith("fd")) return true;
+  if (ip.startsWith("fe80")) return true;
+
+  const mappedMatch = ip.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/i);
+  if (mappedMatch) {
+    const parts = mappedMatch[1].split(".").map(Number);
+    if (parts.length === 4 && parts.every(p => !isNaN(p) && p >= 0 && p <= 255)) {
+      return isPrivateIPv4(parts);
+    }
+  }
+
+  const parts = ip.split(".").map(Number);
+  if (parts.length === 4 && parts.every(p => !isNaN(p) && p >= 0 && p <= 255)) {
+    return isPrivateIPv4(parts);
+  }
+
+  return false;
+}
+
+export async function validateUrl(url: string): Promise<{ valid: boolean; reason?: string }> {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return { valid: false, reason: "Invalid URL format" };
+  }
+
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+    return { valid: false, reason: `Protocol not allowed: ${parsed.protocol}` };
+  }
+
+  const hostname = parsed.hostname;
+
+  if (BLOCKED_HOSTNAMES.has(hostname) || hostname.endsWith(".local")) {
+    return { valid: false, reason: "Hostname not allowed" };
+  }
+
+  try {
+    const result = await dns.lookup(hostname, { all: true });
+    for (const entry of result) {
+      if (isPrivateIP(entry.address)) {
+        return { valid: false, reason: "URL resolves to a private network address" };
+      }
+    }
+  } catch {
+    return { valid: false, reason: "Could not resolve hostname" };
+  }
+
+  return { valid: true };
+}
 
 export interface ScrapedData {
   content: string;
@@ -16,6 +82,45 @@ const USER_AGENTS = [
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
 ];
 
+const MAX_REDIRECTS = 5;
+
+async function fetchSafe(url: string, userAgent: string, signal: AbortSignal): Promise<string> {
+  let currentUrl = url;
+
+  for (let hops = 0; hops <= MAX_REDIRECTS; hops++) {
+    const res = await fetch(currentUrl, {
+      headers: {
+        "User-Agent": userAgent,
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Cache-Control": "no-cache",
+      },
+      redirect: "manual",
+      signal,
+    });
+
+    if (res.status >= 300 && res.status < 400) {
+      const location = res.headers.get("location");
+      if (!location) throw new Error("Redirect with no Location header");
+      const nextUrl = new URL(location, currentUrl).href;
+      const check = await validateUrl(nextUrl);
+      if (!check.valid) {
+        throw new Error(`Redirect blocked: ${check.reason}`);
+      }
+      currentUrl = nextUrl;
+      continue;
+    }
+
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}`);
+    }
+
+    return await res.text();
+  }
+
+  throw new Error("Too many redirects");
+}
+
 async function fetchWithRetry(url: string, maxRetries = 3): Promise<string> {
   let lastError: Error | null = null;
 
@@ -24,25 +129,12 @@ async function fetchWithRetry(url: string, maxRetries = 3): Promise<string> {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 15000);
 
-      const res = await fetch(url, {
-        headers: {
-          "User-Agent": USER_AGENTS[i % USER_AGENTS.length],
-          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-          "Accept-Language": "en-US,en;q=0.9",
-          "Cache-Control": "no-cache",
-        },
-        redirect: "follow",
-        signal: controller.signal,
-      });
+      const result = await fetchSafe(url, USER_AGENTS[i % USER_AGENTS.length], controller.signal);
 
       clearTimeout(timeout);
-
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}`);
-      }
-
-      return await res.text();
+      return result;
     } catch (err: any) {
+      if (err?.message?.startsWith("Redirect blocked:") || err?.message === "Too many redirects") throw err;
       lastError = err;
       if (i < maxRetries - 1) {
         await new Promise(r => setTimeout(r, 1000 * (i + 1)));
@@ -381,6 +473,11 @@ export function detectSubstackFromHtml(html: string): boolean {
 }
 
 export async function scrapePost(url: string): Promise<ScrapedData> {
+  const check = await validateUrl(url);
+  if (!check.valid) {
+    throw new Error(`URL not allowed: ${check.reason}`);
+  }
+
   const platform = detectPlatform(url);
   if (platform === "linkedin") {
     const data = await scrapeUrl(url);

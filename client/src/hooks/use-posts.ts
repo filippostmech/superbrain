@@ -6,13 +6,12 @@ import type { InsertPost, Post } from "@shared/schema";
 // Helper to handle API requests safely
 async function handleResponse<T>(res: Response, schema?: any): Promise<T> {
   if (!res.ok) {
-    // Try to parse error message
+    let message = res.statusText || "An error occurred";
     try {
       const error = await res.json();
-      throw new Error(error.message || "An error occurred");
-    } catch (e) {
-      throw new Error(res.statusText || "An error occurred");
-    }
+      if (error.message) message = error.message;
+    } catch {}
+    throw new Error(message);
   }
   const data = await res.json();
   if (schema) {
@@ -153,6 +152,75 @@ export function useBulkImport() {
     onError: (error: Error) => {
       toast({
         title: "Import Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+}
+
+export function useEnrichPost() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const res = await fetch(`/api/posts/${id}/enrich`, {
+        method: "POST",
+        credentials: "include",
+      });
+      return handleResponse<{ post: Post; enriched: boolean; message?: string }>(res);
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: [api.posts.list.path] });
+      queryClient.invalidateQueries({ queryKey: ["/api/collections"] });
+      toast({
+        title: data.enriched ? "Post enriched" : "No new data",
+        description: data.enriched
+          ? "Missing details have been filled in from the original URL."
+          : data.message || "The post already has all available data.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Enrichment failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+}
+
+export function useEnrichAll() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/posts/enrich-all", {
+        method: "POST",
+        credentials: "include",
+      });
+      return handleResponse<{ enriched: number; failed: number; total: number; message?: string }>(res);
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: [api.posts.list.path] });
+      queryClient.invalidateQueries({ queryKey: ["/api/collections"] });
+      if (data.total === 0) {
+        toast({
+          title: "All posts are up to date",
+          description: "Every post is fully enriched.",
+        });
+      } else {
+        toast({
+          title: "Enrichment complete",
+          description: `Enriched ${data.enriched} of ${data.total} posts${data.failed > 0 ? ` (${data.failed} failed)` : ""}.`,
+        });
+      }
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Enrichment failed",
         description: error.message,
         variant: "destructive",
       });

@@ -6,6 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Download, FileText, FileSpreadsheet } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -13,9 +14,10 @@ interface ExportDropdownProps {
   activeTab: string;
   selectedTag: string | null;
   selectedCollectionId: number | null;
+  iconOnly?: boolean;
 }
 
-export function ExportDropdown({ activeTab, selectedTag, selectedCollectionId }: ExportDropdownProps) {
+export function ExportDropdown({ activeTab, selectedTag, selectedCollectionId, iconOnly }: ExportDropdownProps) {
   const { toast } = useToast();
   const [exporting, setExporting] = useState(false);
 
@@ -55,19 +57,36 @@ export function ExportDropdown({ activeTab, selectedTag, selectedCollectionId }:
     }
   };
 
+  const triggerButton = (
+    <Button
+      variant="outline"
+      size={iconOnly ? "icon" : "default"}
+      className="rounded-full"
+      disabled={exporting}
+      aria-label={iconOnly ? "Export" : undefined}
+      data-testid="button-export"
+    >
+      <Download className={iconOnly ? "w-4 h-4" : "w-4 h-4 mr-2"} />
+      {!iconOnly && (exporting ? "Exporting..." : "Export")}
+    </Button>
+  );
+
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          className="rounded-full"
-          disabled={exporting}
-          data-testid="button-export"
-        >
-          <Download className="w-4 h-4 mr-2" />
-          {exporting ? "Exporting..." : "Export"}
-        </Button>
-      </DropdownMenuTrigger>
+      {iconOnly ? (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DropdownMenuTrigger asChild>
+              {triggerButton}
+            </DropdownMenuTrigger>
+          </TooltipTrigger>
+          <TooltipContent>Export</TooltipContent>
+        </Tooltip>
+      ) : (
+        <DropdownMenuTrigger asChild>
+          {triggerButton}
+        </DropdownMenuTrigger>
+      )}
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => handleExport("csv")} data-testid="button-export-csv">
           <FileSpreadsheet className="w-4 h-4 mr-2" />

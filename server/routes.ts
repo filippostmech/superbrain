@@ -6,7 +6,7 @@ import { z } from "zod";
 import { setupAuth, registerAuthRoutes } from "./replit_integrations/auth";
 import { registerChatRoutes } from "./replit_integrations/chat";
 import OpenAI from "openai";
-import { scrapePost, detectPlatform } from "./scraper";
+import { scrapePost, detectPlatform, validateUrl } from "./scraper";
 import { createV1Router, generateApiKey } from "./apiV1";
 import { processPostEntities, backfillEntities, getKnowledgeGraph, getEntityDetail, getGraphStats } from "./knowledgeGraph";
 
@@ -44,12 +44,16 @@ export async function registerRoutes(
   app.post("/api/scrape", requireAuth, async (req, res) => {
     try {
       const { url } = z.object({ url: z.string().url() }).parse(req.body);
+      const urlCheck = await validateUrl(url);
+      if (!urlCheck.valid) {
+        return res.status(400).json({ message: `URL not allowed: ${urlCheck.reason}` });
+      }
       const scraped = await scrapePost(url);
       res.json(scraped);
     } catch (err: any) {
       console.error("Scrape error:", err?.message || err);
       res.status(400).json({
-        message: err instanceof z.ZodError ? "Invalid URL" : "Failed to scrape URL",
+        message: err instanceof z.ZodError ? "Invalid URL" : (err?.message || "Failed to scrape URL"),
       });
     }
   });
@@ -324,6 +328,100 @@ export async function registerRoutes(
       }
       console.error("Bulk import error:", err);
       res.status(500).json({ message: "Failed to import posts" });
+    }
+  });
+
+  // Enrich a single post by re-scraping its original URL
+  app.post("/api/posts/:id/enrich", requireAuth, async (req, res) => {
+    try {
+      const postId = parseInt(req.params.id);
+      const userId = getUserId(req);
+
+      const post = await storage.getPost(postId);
+      if (!post || post.userId !== userId) {
+        return res.status(404).json({ message: "Post not found" });
+      }
+      if (!post.originalUrl) {
+        return res.status(400).json({ message: "Post has no original URL to enrich from" });
+      }
+
+      const scraped = await scrapePost(post.originalUrl);
+      const updates: any = {};
+
+      if (scraped.imageUrl && !post.imageUrl) updates.imageUrl = scraped.imageUrl;
+      if (scraped.authorUrl && !post.authorUrl) updates.authorUrl = scraped.authorUrl;
+      if (scraped.authorName && !post.authorName) updates.authorName = scraped.authorName;
+      if (scraped.content && scraped.content.length > (post.content?.length || 0) * 1.5) {
+        updates.content = scraped.content;
+      }
+      if (scraped.platform && post.platform === "linkedin") {
+        const detected = scraped.platform;
+        if (detected !== "linkedin") updates.platform = detected;
+      }
+
+      if (Object.keys(updates).length === 0) {
+        return res.json({ post, enriched: false, message: "No new data found" });
+      }
+
+      const updatedPost = await storage.updatePost(postId, updates);
+
+      processPostEntities(updatedPost).catch(err => {
+        console.error("Background entity extraction failed:", err);
+      });
+
+      res.json({ post: updatedPost, enriched: true });
+    } catch (err) {
+      console.error("Enrich error:", err);
+      res.status(500).json({ message: "Failed to enrich post" });
+    }
+  });
+
+  // Enrich all posts missing images in bulk
+  app.post("/api/posts/enrich-all", requireAuth, async (req, res) => {
+    try {
+      const userId = getUserId(req);
+      const allPosts = await storage.getPosts(userId);
+      const unenriched = allPosts.filter(p => p.originalUrl && (!p.imageUrl || !p.authorName || !p.authorUrl));
+
+      if (unenriched.length === 0) {
+        return res.json({ enriched: 0, failed: 0, total: 0, message: "All posts are fully enriched" });
+      }
+
+      let enriched = 0;
+      let failed = 0;
+
+      const pLimit = (await import("p-limit")).default;
+      const limit = pLimit(2);
+
+      const tasks = unenriched.map(post => limit(async () => {
+        try {
+          const scraped = await scrapePost(post.originalUrl!);
+          const updates: any = {};
+
+          if (scraped.imageUrl && !post.imageUrl) updates.imageUrl = scraped.imageUrl;
+          if (scraped.authorUrl && !post.authorUrl) updates.authorUrl = scraped.authorUrl;
+          if (scraped.authorName && !post.authorName) updates.authorName = scraped.authorName;
+          if (scraped.content && scraped.content.length > (post.content?.length || 0) * 1.5) {
+            updates.content = scraped.content;
+          }
+
+          if (Object.keys(updates).length > 0) {
+            const updated = await storage.updatePost(post.id, updates);
+            processPostEntities(updated).catch(() => {});
+            enriched++;
+          }
+        } catch {
+          failed++;
+        }
+        await new Promise(r => setTimeout(r, 500));
+      }));
+
+      await Promise.all(tasks);
+
+      res.json({ enriched, failed, total: unenriched.length });
+    } catch (err) {
+      console.error("Bulk enrich error:", err);
+      res.status(500).json({ message: "Failed to enrich posts" });
     }
   });
 

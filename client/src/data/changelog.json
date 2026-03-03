@@ -1,5 +1,42 @@
 [
   {
+    "date": "March 3, 2026",
+    "version": "0.14.0",
+    "entries": [
+      {
+        "category": "New",
+        "items": [
+          "Post enrichment — scrape original URLs to fill in missing images, author info, and fuller content for bulk-imported posts",
+          "Per-post Enrich button appears on cards and list items that are missing data (image, author name, or author URL)",
+          "Enrich All button on the Dashboard processes every unenriched post in one click, with progress feedback",
+          "Mobile-friendly — Enrich All also available in the mobile more menu"
+        ]
+      },
+      {
+        "category": "Security",
+        "items": [
+          "SSRF protection — URL validation with protocol allowlisting (http/https only) and private IP blocking for all scrape endpoints",
+          "Per-hop redirect validation — redirects are now followed manually with each hop checked against the blocklist before fetching",
+          "IPv6-mapped IPv4 blocking — addresses like ::ffff:127.0.0.1 are correctly identified and blocked",
+          "DNS resolution check — hostnames that resolve to private network addresses are rejected"
+        ]
+      },
+      {
+        "category": "Improved",
+        "items": [
+          "Dashboard header decluttered — navigation buttons (Knowledge Graph, API Docs, API Keys, Extension, Export) converted to compact icon-only circular buttons with tooltips",
+          "Better error messages — backend error details now surface properly in toast notifications instead of generic status text"
+        ]
+      },
+      {
+        "category": "Fixed",
+        "items": [
+          "LinkedIn CSV bulk import — parser rewritten to correctly handle multi-line quoted fields and map LinkedIn's export column headers (Post Text, Post Link, Profile)"
+        ]
+      }
+    ]
+  },
+  {
     "date": "March 2, 2026",
     "version": "0.13.0",
     "entries": [

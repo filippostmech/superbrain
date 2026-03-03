@@ -2,7 +2,7 @@ import { Router, Request, Response, NextFunction } from "express";
 import { createHash, randomBytes } from "crypto";
 import { storage } from "./storage";
 import { z } from "zod";
-import { scrapePost, detectPlatform } from "./scraper";
+import { scrapePost, detectPlatform, validateUrl } from "./scraper";
 import OpenAI from "openai";
 
 const openai = new OpenAI({
@@ -272,14 +272,18 @@ export function createV1Router(): Router {
     try {
       const schema = z.object({ url: z.string().url("Valid URL is required") });
       const { url } = schema.parse(req.body);
+      const urlCheck = await validateUrl(url);
+      if (!urlCheck.valid) {
+        return res.status(400).json({ error: "url_blocked", message: `URL not allowed: ${urlCheck.reason}` });
+      }
       const scraped = await scrapePost(url);
       res.json({ data: scraped });
-    } catch (err) {
+    } catch (err: any) {
       if (err instanceof z.ZodError) {
         return res.status(400).json({ error: "validation_error", message: "Invalid URL" });
       }
       console.error("API v1 POST /scrape error:", err);
-      res.status(400).json({ error: "scrape_failed", message: "Failed to scrape URL" });
+      res.status(400).json({ error: "scrape_failed", message: err?.message || "Failed to scrape URL" });
     }
   });
 

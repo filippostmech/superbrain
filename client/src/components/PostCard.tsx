@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { format } from "date-fns";
 import { Post } from "@shared/schema";
-import { useUpdatePost, useDeletePost } from "@/hooks/use-posts";
+import { useUpdatePost, useDeletePost, useEnrichPost } from "@/hooks/use-posts";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Trash2, ExternalLink, Calendar, MessageSquareQuote, Tag } from "lucide-react";
+import { Heart, Trash2, ExternalLink, Calendar, MessageSquareQuote, Tag, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AddToCollectionPopover } from "@/components/AddToCollectionPopover";
 import { motion } from "framer-motion";
@@ -36,7 +36,9 @@ function getPlatformBadgeClass(platform: string): string {
 export function PostCard({ post }: { post: Post }) {
   const updateMutation = useUpdatePost();
   const deleteMutation = useDeletePost();
+  const enrichMutation = useEnrichPost();
   const [isExpanded, setIsExpanded] = useState(false);
+  const canEnrich = !!post.originalUrl && (!post.imageUrl || !post.authorName || !post.authorUrl);
 
   const toggleFavorite = () => {
     updateMutation.mutate({ 
@@ -153,6 +155,19 @@ export function PostCard({ post }: { post: Post }) {
               </Button>
             )}
             <AddToCollectionPopover postId={post.id} />
+            {canEnrich && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="rounded-lg text-xs"
+                onClick={() => enrichMutation.mutate(post.id)}
+                disabled={enrichMutation.isPending}
+                data-testid={`button-enrich-${post.id}`}
+              >
+                <RefreshCw className={cn("w-3 h-3 mr-2", enrichMutation.isPending && "animate-spin")} />
+                {enrichMutation.isPending ? "Enriching..." : "Enrich"}
+              </Button>
+            )}
           </div>
 
           <AlertDialog>

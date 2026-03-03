@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import { usePosts } from "@/hooks/use-posts";
+import { usePosts, useEnrichAll } from "@/hooks/use-posts";
 import { CreatePostDialog } from "@/components/CreatePostDialog";
 import { BulkImportDialog } from "@/components/BulkImportDialog";
 import { CollectionManager } from "@/components/CollectionManager";
@@ -10,6 +10,7 @@ import { AISearchSidebar } from "@/components/AISearchSidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { 
   LogOut, 
   Menu, 
@@ -28,7 +29,8 @@ import {
   Network,
   MoreHorizontal,
   FileText,
-  FileSpreadsheet
+  FileSpreadsheet,
+  RefreshCw
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -45,10 +47,12 @@ import { cn } from "@/lib/utils";
 import { PostListItem } from "@/components/PostListItem";
 import { ExportDropdown } from "@/components/ExportDropdown";
 
-function MobileMoreMenu({ activeTab, selectedTag, selectedCollectionId }: {
+function MobileMoreMenu({ activeTab, selectedTag, selectedCollectionId, onEnrichAll, isEnriching }: {
   activeTab: string;
   selectedTag: string | null;
   selectedCollectionId: number | null;
+  onEnrichAll?: () => void;
+  isEnriching?: boolean;
 }) {
   const [, navigate] = useLocation();
 
@@ -106,6 +110,12 @@ function MobileMoreMenu({ activeTab, selectedTag, selectedCollectionId }: {
           <FileText className="w-4 h-4 mr-2" />
           Export as Markdown
         </DropdownMenuItem>
+        {onEnrichAll && (
+          <DropdownMenuItem onClick={onEnrichAll} disabled={isEnriching} data-testid="menu-enrich-all">
+            <RefreshCw className={cn("w-4 h-4 mr-2", isEnriching && "animate-spin")} />
+            {isEnriching ? "Enriching..." : "Enrich All Posts"}
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -118,6 +128,7 @@ export default function Dashboard() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const { data: posts, isLoading } = usePosts(debouncedSearch);
+  const enrichAllMutation = useEnrichAll();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -245,43 +256,74 @@ export default function Dashboard() {
                 <p className="text-muted-foreground mt-1">Manage and organize your saved content.</p>
               </div>
               <div className="flex items-center gap-2 flex-wrap">
-                <div className="hidden md:contents">
-                  <Link href="/knowledge-graph">
-                    <Button variant="outline" className="rounded-full" data-testid="button-knowledge-graph-page">
-                      <Network className="w-4 h-4 mr-2" />
-                      Knowledge Graph
-                    </Button>
-                  </Link>
-                  <Link href="/developers">
-                    <Button variant="outline" className="rounded-full" data-testid="button-developers-page">
-                      <BookOpen className="w-4 h-4 mr-2" />
-                      API Docs
-                    </Button>
-                  </Link>
-                  <Link href="/api-keys">
-                    <Button variant="outline" className="rounded-full" data-testid="button-api-keys-page">
-                      <Key className="w-4 h-4 mr-2" />
-                      API Keys
-                    </Button>
-                  </Link>
-                  <Link href="/extension">
-                    <Button variant="outline" className="rounded-full" data-testid="button-extension-page">
-                      <Chrome className="w-4 h-4 mr-2" />
-                      Extension
-                    </Button>
-                  </Link>
-                  <ExportDropdown
-                    activeTab={activeTab}
-                    selectedTag={selectedTag}
-                    selectedCollectionId={selectedCollectionId}
-                  />
-                </div>
+                <TooltipProvider delayDuration={200}>
+                  <div className="hidden md:contents">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Link href="/knowledge-graph">
+                          <Button variant="outline" size="icon" className="rounded-full" aria-label="Knowledge Graph" data-testid="button-knowledge-graph-page">
+                            <Network className="w-4 h-4" />
+                          </Button>
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent>Knowledge Graph</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Link href="/developers">
+                          <Button variant="outline" size="icon" className="rounded-full" aria-label="API Docs" data-testid="button-developers-page">
+                            <BookOpen className="w-4 h-4" />
+                          </Button>
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent>API Docs</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Link href="/api-keys">
+                          <Button variant="outline" size="icon" className="rounded-full" aria-label="API Keys" data-testid="button-api-keys-page">
+                            <Key className="w-4 h-4" />
+                          </Button>
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent>API Keys</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Link href="/extension">
+                          <Button variant="outline" size="icon" className="rounded-full" aria-label="Extension" data-testid="button-extension-page">
+                            <Chrome className="w-4 h-4" />
+                          </Button>
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent>Extension</TooltipContent>
+                    </Tooltip>
+                    <ExportDropdown
+                      activeTab={activeTab}
+                      selectedTag={selectedTag}
+                      selectedCollectionId={selectedCollectionId}
+                      iconOnly
+                    />
+                  </div>
+                </TooltipProvider>
                 <MobileMoreMenu
                   activeTab={activeTab}
                   selectedTag={selectedTag}
                   selectedCollectionId={selectedCollectionId}
+                  onEnrichAll={() => enrichAllMutation.mutate()}
+                  isEnriching={enrichAllMutation.isPending}
                 />
                 <BulkImportDialog />
+                <Button
+                  variant="outline"
+                  className="rounded-full"
+                  onClick={() => enrichAllMutation.mutate()}
+                  disabled={enrichAllMutation.isPending}
+                  data-testid="button-enrich-all"
+                >
+                  <RefreshCw className={cn("w-4 h-4 mr-2", enrichAllMutation.isPending && "animate-spin")} />
+                  {enrichAllMutation.isPending ? "Enriching..." : "Enrich All"}
+                </Button>
                 <CreatePostDialog />
               </div>
             </div>

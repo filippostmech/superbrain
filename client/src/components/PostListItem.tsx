@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { format } from "date-fns";
 import { Post } from "@shared/schema";
-import { useUpdatePost, useDeletePost } from "@/hooks/use-posts";
+import { useUpdatePost, useDeletePost, useEnrichPost } from "@/hooks/use-posts";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Trash2, ExternalLink, Calendar, ChevronDown, ChevronUp } from "lucide-react";
+import { Heart, Trash2, ExternalLink, Calendar, ChevronDown, ChevronUp, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AddToCollectionPopover } from "@/components/AddToCollectionPopover";
 import { motion } from "framer-motion";
@@ -36,7 +36,9 @@ import {
 export function PostListItem({ post }: { post: Post }) {
   const updateMutation = useUpdatePost();
   const deleteMutation = useDeletePost();
+  const enrichMutation = useEnrichPost();
   const [isExpanded, setIsExpanded] = useState(false);
+  const canEnrich = !!post.originalUrl && (!post.imageUrl || !post.authorName || !post.authorUrl);
 
   const toggleFavorite = () => {
     updateMutation.mutate({
@@ -147,6 +149,20 @@ export function PostListItem({ post }: { post: Post }) {
             </Button>
 
             <AddToCollectionPopover postId={post.id} />
+
+            {canEnrich && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full text-muted-foreground"
+                onClick={() => enrichMutation.mutate(post.id)}
+                disabled={enrichMutation.isPending}
+                aria-label="Enrich post"
+                data-testid={`button-enrich-list-${post.id}`}
+              >
+                <RefreshCw className={cn("w-4 h-4", enrichMutation.isPending && "animate-spin")} />
+              </Button>
+            )}
 
             {post.originalUrl && (
               <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground" asChild>

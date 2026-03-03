@@ -30,16 +30,20 @@ superBrain is an open-source web app that acts as a personal knowledge base for 
 ## Features
 
 - **Save Posts** — Manually create entries or paste a URL to auto-scrape content, images, and author info
-- **URL Scraping** — Smart extraction for LinkedIn, Substack (including custom domains), and generic URLs
-- **Bulk Import** — Upload CSV or JSON files to import many posts at once
+- **URL Scraping** — Smart extraction for LinkedIn, Substack (including custom domains), and generic URLs with SSRF protection (protocol allowlisting, private IP blocking, per-hop redirect validation)
+- **Post Enrichment** — Re-scrape original URLs to fill in missing images, author info, and content for bulk-imported posts. Enrich one post at a time or hit "Enrich All" to process every unenriched post in one click
+- **Bulk Import** — Upload CSV or JSON files to import many posts at once, including LinkedIn's native CSV export format
 - **Chrome Extension** — Save posts directly from LinkedIn and Substack with one click
 - **Tags & Collections** — Organize posts with tags and named collections, filter by either on the dashboard
 - **AI Search** — Ask natural language questions about your saved content using semantic search
 - **Grid & List Views** — Toggle between card grid and compact list layouts
 - **Favorites** — Mark posts as favorites for quick access
+- **Dark Mode** — Toggle between light and dark themes with your preference saved automatically
+- **Mobile Responsive** — Fully usable on phones and small tablets with adaptive layouts, touch-friendly controls, and a collapsible mobile menu
+- **Export** — Download your posts as CSV or Markdown files, with current filters (favorites, tags, collections, platform) applied
 - **Platform Badges** — Color-coded badges for LinkedIn (blue), Substack (orange), and other sources
 - **Knowledge Graph** — AI-powered entity extraction that maps people, companies, topics, and technologies from your posts into an interactive force-directed graph visualization with search, filtering, and relationship exploration
-- **Public REST API** — Programmatic access to your data via API keys (Pro)
+- **Public REST API** — Programmatic access to your data via API keys with rate limiting (100 req/min)
 
 ## Tech Stack
 
@@ -105,11 +109,14 @@ server/                  Express backend
   apiV1.ts               Public REST API v1 (Bearer token auth, rate limiting)
   knowledgeGraph.ts       Entity extraction & knowledge graph API
   storage.ts             Database storage interface
-  scraper.ts             URL scraping with Cheerio
+  scraper.ts             URL scraping with Cheerio + SSRF protection
 
 shared/                  Shared between client & server
   schema.ts              Drizzle schema + Zod validation
   routes.ts              API route contracts
+
+mcp/                     MCP Server (AI agent integration)
+  server.ts              Stdio transport server wrapping the v1 API
 ```
 
 ## Chrome Extension
@@ -197,7 +204,9 @@ Please make sure your code follows the existing style and includes relevant test
 | Done | Favorites-only filter view |
 | Done | Export to CSV & Markdown — download posts with current filters applied |
 | Done | Knowledge Graph — AI entity extraction with interactive force-directed visualization |
-| Done | Mobile-responsive improvements — fully usable on phones and small tablets |
+| Done | Mobile-responsive design — fully usable on phones and small tablets |
+| Done | Post enrichment — re-scrape URLs to fill missing images, author info, and content (single + bulk) |
+| Done | SSRF protection — URL validation with protocol allowlisting, private IP blocking, and per-hop redirect validation |
 | Planned | AI auto-tagging on save |
 | Planned | AI-generated post summaries |
 | Planned | Related posts suggestions |
