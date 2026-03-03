@@ -1,10 +1,11 @@
 import { motion } from "framer-motion";
-import { ArrowLeft, Bookmark, Key, Sun, Moon } from "lucide-react";
+import { Key } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Link } from "wouter";
-import { useTheme } from "@/hooks/use-theme";
+import AppLayout from "@/components/AppLayout";
+import { useAuth } from "@/hooks/use-auth";
 
 function CodeBlock({ children }: { children: string }) {
   return (
@@ -272,37 +273,11 @@ const endpoints: EndpointProps[] = [
 ];
 
 export default function DevelopersPage() {
-  const { theme, toggleTheme } = useTheme();
+  const { user } = useAuth();
+  const Wrapper = user ? AppLayout : ({ children }: { children: React.ReactNode }) => <>{children}</>;
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border/50 sticky top-0 z-[1000] bg-background/95 backdrop-blur">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center gap-4 flex-wrap">
-          <Link href="/">
-            <Button variant="ghost" size="icon" data-testid="button-back-home">
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-          </Link>
-          <div className="flex items-center gap-2">
-            <div className="bg-primary p-1.5 rounded-md">
-              <Bookmark className="w-4 h-4 text-primary-foreground" />
-            </div>
-            <span className="text-lg font-semibold tracking-tight">superBrain</span>
-          </div>
-          <div className="ml-auto flex items-center gap-2">
-            <Link href="/api-keys">
-              <Button variant="outline" size="sm" data-testid="button-manage-api-keys">
-                <Key className="w-4 h-4 sm:mr-2" />
-                <span className="hidden sm:inline">Manage API Keys</span>
-              </Button>
-            </Link>
-            <Button variant="ghost" size="icon" onClick={toggleTheme} data-testid="button-theme-toggle">
-              {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-            </Button>
-          </div>
-        </div>
-      </header>
-
+    <Wrapper>
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -517,6 +492,6 @@ export default function DevelopersPage() {
           </section>
         </motion.div>
       </main>
-    </div>
+    </Wrapper>
   );
 }

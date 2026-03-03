@@ -30,18 +30,14 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  ArrowLeft,
-  Bookmark,
   Plus,
   Copy,
   Check,
   Trash2,
   Key,
   AlertTriangle,
-  Sun,
-  Moon,
 } from "lucide-react";
-import { useTheme } from "@/hooks/use-theme";
+import AppLayout from "@/components/AppLayout";
 
 interface ApiKey {
   id: number;
@@ -63,7 +59,6 @@ interface CreatedApiKey {
 export default function ApiKeysPage() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const { theme, toggleTheme } = useTheme();
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [keyName, setKeyName] = useState("");
@@ -135,26 +130,7 @@ export default function ApiKeysPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="h-16 border-b border-border/60 bg-background/80 backdrop-blur-md px-4 lg:px-6 flex items-center justify-between z-30">
-        <div className="flex items-center gap-4">
-          <Link href="/">
-            <Button variant="ghost" size="icon" data-testid="button-back-dashboard">
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
-          </Link>
-          <div className="flex items-center gap-2 font-bold text-lg text-primary">
-            <div className="bg-primary p-1.5 rounded-lg">
-              <Bookmark className="w-4 h-4 text-white" />
-            </div>
-            <span>superBrain</span>
-          </div>
-        </div>
-        <Button variant="ghost" size="icon" onClick={toggleTheme} data-testid="button-theme-toggle">
-          {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-        </Button>
-      </header>
-
+    <AppLayout>
       <main className="max-w-3xl mx-auto p-4 sm:p-6 lg:p-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
           <div>
@@ -366,6 +342,6 @@ export default function ApiKeysPage() {
           </div>
         )}
       </main>
-    </div>
+    </AppLayout>
   );
 }

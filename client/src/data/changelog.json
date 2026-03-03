@@ -1,6 +1,52 @@
 [
   {
     "date": "March 3, 2026",
+    "version": "0.15.1",
+    "entries": [
+      {
+        "category": "Improved",
+        "items": [
+          "Sign out button is now directly visible in the sidebar footer — no longer hidden inside a dropdown menu",
+          "Collapsed sidebar icons — logo, user avatar, and sign-out now match the size and alignment of all navigation icons",
+          "User avatar shows a tooltip with your name when hovering in collapsed sidebar mode"
+        ]
+      },
+      {
+        "category": "Fixed",
+        "items": [
+          "Logo no longer clips on the right edge when the sidebar is collapsed",
+          "Knowledge Graph layout — right-side buttons (Fit to Screen, Analyze posts) are now fully visible",
+          "Sidebar navigation links work correctly as SPA routes without full page reloads",
+          "Mobile sidebar auto-closes after selecting a navigation item"
+        ]
+      }
+    ]
+  },
+  {
+    "date": "March 3, 2026",
+    "version": "0.15.0",
+    "entries": [
+      {
+        "category": "New",
+        "items": [
+          "Collapsible sidebar navigation — a shared left sidebar replaces per-page header navigation across all authenticated pages",
+          "Sidebar collapses to an icon rail on desktop and becomes a slide-out sheet on mobile",
+          "Dashboard page placeholder — reserved for future analytics and insights",
+          "Library page — the main content view (formerly Dashboard) now focuses purely on content actions"
+        ]
+      },
+      {
+        "category": "Improved",
+        "items": [
+          "Consistent app shell — every page now shares the same layout with sidebar, top bar, and user menu",
+          "Cleaner Library header — navigation buttons removed; only action buttons remain (Export, Bulk Import, Enrich All, Add Content)",
+          "Sidebar highlights the active page and supports keyboard shortcut (Ctrl/Cmd+B) to toggle"
+        ]
+      }
+    ]
+  },
+  {
+    "date": "March 3, 2026",
     "version": "0.14.0",
     "entries": [
       {

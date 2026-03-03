@@ -3,6 +3,7 @@ import { useBulkImport } from "@/hooks/use-posts";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { Upload, Loader2, FileText, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -192,12 +193,16 @@ export function BulkImportDialog() {
 
   return (
     <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetState(); }}>
-      <DialogTrigger asChild>
-        <Button data-testid="button-bulk-import" variant="outline" className="rounded-full">
-          <Upload className="w-4 h-4 mr-2" />
-          Bulk Import
-        </Button>
-      </DialogTrigger>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DialogTrigger asChild>
+            <Button data-testid="button-bulk-import" variant="outline" size="icon" className="rounded-full" aria-label="Bulk Import">
+              <Upload className="w-4 h-4" />
+            </Button>
+          </DialogTrigger>
+        </TooltipTrigger>
+        <TooltipContent>Bulk Import</TooltipContent>
+      </Tooltip>
       <DialogContent className="sm:max-w-[600px] rounded-2xl">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-primary">Bulk Import</DialogTitle>

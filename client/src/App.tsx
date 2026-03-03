@@ -9,7 +9,8 @@ import { Loader2 } from "lucide-react";
 
 import NotFound from "@/pages/not-found";
 import LandingPage from "@/pages/LandingPage";
-import Dashboard from "@/pages/Dashboard";
+import LibraryPage from "@/pages/LibraryPage";
+import DashboardPage from "@/pages/DashboardPage";
 import ExtensionPage from "@/pages/ExtensionPage";
 import ChangelogPage from "@/pages/ChangelogPage";
 import TermsPage from "@/pages/TermsPage";
@@ -31,18 +32,23 @@ function Router() {
 
   return (
     <Switch>
-      <Route path="/changelog" component={ChangelogPage} />
       <Route path="/terms" component={TermsPage} />
       <Route path="/privacy" component={PrivacyPage} />
-      <Route path="/developers" component={DevelopersPage} />
       {!user ? (
-        <Route path="/" component={LandingPage} />
+        <>
+          <Route path="/" component={LandingPage} />
+          <Route path="/changelog" component={ChangelogPage} />
+          <Route path="/developers" component={DevelopersPage} />
+        </>
       ) : (
         <>
-          <Route path="/" component={Dashboard} />
+          <Route path="/" component={LibraryPage} />
+          <Route path="/dashboard" component={DashboardPage} />
           <Route path="/extension" component={ExtensionPage} />
           <Route path="/api-keys" component={ApiKeysPage} />
           <Route path="/knowledge-graph" component={KnowledgeGraphPage} />
+          <Route path="/changelog" component={ChangelogPage} />
+          <Route path="/developers" component={DevelopersPage} />
         </>
       )}
       <Route component={NotFound} />

@@ -1,10 +1,8 @@
 import { motion } from "framer-motion";
-import { ArrowLeft, Sun, Moon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Link } from "wouter";
-import { useTheme } from "@/hooks/use-theme";
 import changelogData from "@/data/changelog.json";
+import AppLayout from "@/components/AppLayout";
+import { useAuth } from "@/hooks/use-auth";
 
 interface ChangelogEntry {
   category: string;
@@ -34,26 +32,11 @@ function getCategoryVariant(category: string): CategoryVariant {
 
 export default function ChangelogPage() {
   const releases = changelogData as ChangelogRelease[];
-  const { theme, toggleTheme } = useTheme();
+  const { user } = useAuth();
+  const Wrapper = user ? AppLayout : ({ children }: { children: React.ReactNode }) => <>{children}</>;
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border/50 sticky top-0 z-[1000] bg-background/95 backdrop-blur">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <Link href="/">
-              <Button variant="ghost" size="icon" data-testid="button-back-home">
-                <ArrowLeft className="w-5 h-5" />
-              </Button>
-            </Link>
-            <span className="text-lg font-semibold tracking-tight">superBrain</span>
-          </div>
-          <Button variant="ghost" size="icon" onClick={toggleTheme} data-testid="button-theme-toggle">
-            {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-          </Button>
-        </div>
-      </header>
-
+    <Wrapper>
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -110,6 +93,6 @@ export default function ChangelogPage() {
           ))}
         </div>
       </main>
-    </div>
+    </Wrapper>
   );
 }

@@ -1,11 +1,11 @@
 import { useState, useCallback, useRef, useEffect } from "react";
+import { useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/hooks/use-theme";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Link } from "wouter";
 import ForceGraph2D from "react-force-graph-2d";
 import { forceX, forceY } from "d3-force";
 import { Button } from "@/components/ui/button";
@@ -19,10 +19,6 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import {
-  ArrowLeft,
-  Bookmark,
-  Sun,
-  Moon,
   Search,
   RefreshCw,
   X,
@@ -36,6 +32,7 @@ import {
   Zap,
   Maximize,
 } from "lucide-react";
+import AppLayout from "@/components/AppLayout";
 
 interface GraphNode {
   id: number;
@@ -233,6 +230,7 @@ function EntityDetailContent({
 }
 
 export default function KnowledgeGraphPage() {
+  const [, navigate] = useLocation();
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { toast } = useToast();
@@ -388,41 +386,10 @@ export default function KnowledgeGraphPage() {
   const isEmpty = !graphLoading && data.nodes.length === 0;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col h-screen overflow-hidden">
-      <header className="h-16 border-b border-border/60 bg-background/80 backdrop-blur-md px-4 lg:px-6 flex items-center justify-between z-30 shrink-0">
-        <div className="flex items-center gap-4">
-          <Link href="/">
-            <Button variant="ghost" size="icon" data-testid="button-back-dashboard">
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
-          </Link>
-          <div className="flex items-center gap-2 font-bold text-lg text-primary">
-            <div className="bg-primary p-1.5 rounded-lg">
-              <Bookmark className="w-4 h-4 text-white" />
-            </div>
-            <span className="hidden sm:inline">superBrain</span>
-          </div>
-          <div className="h-6 w-px bg-border mx-2" />
-          <div className="flex items-center gap-2">
-            <Network className="w-4 h-4 text-muted-foreground" />
-            <h1 className="text-sm font-semibold text-foreground">Knowledge Graph</h1>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleTheme}
-            data-testid="button-theme-toggle"
-          >
-            {theme === "light" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
-          </Button>
-        </div>
-      </header>
-
-      <div className="flex flex-1 overflow-hidden">
-        <div className="flex-1 relative overflow-hidden">
-          <div className="absolute top-3 left-3 md:top-4 md:left-4 z-10 flex flex-col gap-2 md:gap-3 max-w-[calc(100%-6rem)] md:max-w-none">
+    <AppLayout>
+      <div className="absolute inset-0 flex overflow-hidden">
+        <div className="flex-1 relative min-w-0 overflow-hidden">
+          <div className="absolute top-3 left-3 md:top-4 md:left-4 z-10 flex flex-col gap-2 md:gap-3 max-w-[calc(100%-6rem)] md:max-w-[55%]">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
@@ -557,9 +524,7 @@ export default function KnowledgeGraphPage() {
                   Analyze posts now
                 </Button>
               ) : (
-                <Link href="/">
-                  <Button data-testid="button-go-to-dashboard">Go to Library</Button>
-                </Link>
+                <Button data-testid="button-go-to-dashboard" onClick={() => navigate("/")}>Go to Library</Button>
               )}
             </div>
           ) : (
@@ -628,6 +593,6 @@ export default function KnowledgeGraphPage() {
           </Sheet>
         )}
       </div>
-    </div>
+    </AppLayout>
   );
 }

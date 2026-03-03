@@ -2,23 +2,17 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { 
-  Bookmark, 
   Download, 
-  ArrowLeft, 
   Chrome, 
   Globe, 
   MousePointer, 
   Puzzle, 
   Shield,
-  Sun,
-  Moon,
 } from "lucide-react";
-import { Link } from "wouter";
-import { useTheme } from "@/hooks/use-theme";
+import AppLayout from "@/components/AppLayout";
 
 export default function ExtensionPage() {
   const { user } = useAuth();
-  const { theme, toggleTheme } = useTheme();
 
   const steps = [
     {
@@ -44,26 +38,7 @@ export default function ExtensionPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="h-16 border-b border-border/60 bg-background/80 backdrop-blur-md px-4 lg:px-6 flex items-center justify-between z-30">
-        <div className="flex items-center gap-4">
-          <Link href="/">
-            <Button variant="ghost" size="icon" data-testid="button-back-dashboard">
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
-          </Link>
-          <div className="flex items-center gap-2 font-bold text-lg text-primary">
-            <div className="bg-primary p-1.5 rounded-lg">
-              <Bookmark className="w-4 h-4 text-white" />
-            </div>
-            <span>superBrain</span>
-          </div>
-        </div>
-        <Button variant="ghost" size="icon" onClick={toggleTheme} data-testid="button-theme-toggle">
-          {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-        </Button>
-      </header>
-
+    <AppLayout>
       <main className="max-w-3xl mx-auto p-4 sm:p-6 lg:p-8">
         <div className="text-center mb-6 sm:mb-10">
           <div className="inline-flex items-center justify-center bg-primary/10 p-4 rounded-2xl mb-4">
@@ -123,6 +98,6 @@ export default function ExtensionPage() {
           </div>
         </Card>
       </main>
-    </div>
+    </AppLayout>
   );
 }

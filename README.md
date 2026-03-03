@@ -39,7 +39,8 @@ superBrain is an open-source web app that acts as a personal knowledge base for 
 - **Grid & List Views** — Toggle between card grid and compact list layouts
 - **Favorites** — Mark posts as favorites for quick access
 - **Dark Mode** — Toggle between light and dark themes with your preference saved automatically
-- **Mobile Responsive** — Fully usable on phones and small tablets with adaptive layouts, touch-friendly controls, and a collapsible mobile menu
+- **Collapsible Sidebar Navigation** — Shared left sidebar across all authenticated pages collapses to an icon rail on desktop and a slide-out sheet on mobile
+- **Mobile Responsive** — Fully usable on phones and small tablets with adaptive layouts, touch-friendly controls, and adaptive sidebar
 - **Export** — Download your posts as CSV or Markdown files, with current filters (favorites, tags, collections, platform) applied
 - **Platform Badges** — Color-coded badges for LinkedIn (blue), Substack (orange), and other sources
 - **Knowledge Graph** — AI-powered entity extraction that maps people, companies, topics, and technologies from your posts into an interactive force-directed graph visualization with search, filtering, and relationship exploration
@@ -95,11 +96,11 @@ npm start          # Run production server
 ```
 client/                  React frontend
   src/
-    components/          UI components (PostCard, CreatePostDialog, AISearchSidebar, etc.)
+    components/          UI components (AppLayout, PostCard, CreatePostDialog, AISearchSidebar, etc.)
     data/                Static data (changelog.json)
     hooks/               Custom hooks (auth, posts, collections)
     lib/                 Utilities (queryClient, auth helpers)
-    pages/               Page components (Dashboard, LandingPage, ChangelogPage)
+    pages/               Page components (LibraryPage, DashboardPage, KnowledgeGraphPage, LandingPage, etc.)
   public/
     extension/           Chrome Extension (Manifest V3)
 
@@ -207,6 +208,7 @@ Please make sure your code follows the existing style and includes relevant test
 | Done | Mobile-responsive design — fully usable on phones and small tablets |
 | Done | Post enrichment — re-scrape URLs to fill missing images, author info, and content (single + bulk) |
 | Done | SSRF protection — URL validation with protocol allowlisting, private IP blocking, and per-hop redirect validation |
+| Done | Collapsible sidebar navigation — shared layout with icon rail on desktop and slide-out sheet on mobile |
 | Planned | AI auto-tagging on save |
 | Planned | AI-generated post summaries |
 | Planned | Related posts suggestions |
