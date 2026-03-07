@@ -309,7 +309,7 @@ export async function registerRoutes(
           authorUrl: p.authorUrl || null,
           publishedAt: p.publishedAt ? new Date(p.publishedAt) : null,
           tags: p.tags || [],
-          platform: "linkedin",
+          platform: p.platform || "linkedin",
         });
       }
 
@@ -451,7 +451,7 @@ export async function registerRoutes(
           authorUrl: p.authorUrl || null,
           publishedAt: p.publishedAt ? new Date(p.publishedAt) : null,
           tags: [],
-          platform: "linkedin",
+          platform: p.platform || "linkedin",
         });
       }
 

@@ -460,6 +460,7 @@ export async function scrapeGenericUrl(url: string): Promise<ScrapedData> {
 export function detectPlatform(url: string): string {
   if (url.includes("linkedin.com")) return "linkedin";
   if (url.includes("substack.com") || url.includes(".substack.")) return "substack";
+  if (url.includes("chatgpt.com") || url.includes("chat.openai.com")) return "chatgpt";
   return "other";
 }
 

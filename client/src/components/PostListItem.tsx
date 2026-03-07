@@ -16,6 +16,8 @@ function getPlatformBadgeClass(platform: string): string {
       return "bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300";
     case "substack":
       return "bg-orange-50 text-orange-700 dark:bg-orange-950 dark:text-orange-300";
+    case "chatgpt":
+      return "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300";
     default:
       return "bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
   }

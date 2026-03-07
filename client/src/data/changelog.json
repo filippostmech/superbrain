@@ -1,5 +1,28 @@
 [
   {
+    "date": "March 7, 2026",
+    "version": "0.16.0",
+    "entries": [
+      {
+        "category": "New",
+        "items": [
+          "ChatGPT support — save ChatGPT conversations to your library via the Chrome Extension or bulk import",
+          "Chrome Extension now works on ChatGPT — a floating 'Save to superBrain' button appears on conversation and shared link pages, capturing the full Q&A exchange",
+          "ChatGPT bulk import — upload your official ChatGPT data export (conversations.json) to import all conversations at once, each as a separate post",
+          "ChatGPT platform badge — green badge for ChatGPT conversations alongside LinkedIn (blue) and Substack (orange)"
+        ]
+      },
+      {
+        "category": "Improved",
+        "items": [
+          "Extension page updated with per-platform setup guides for LinkedIn and ChatGPT, plus bulk import instructions",
+          "Chrome Extension renamed from 'LinkedIn Saver' to 'Content Saver' to reflect multi-platform support",
+          "Bulk Import dialog now auto-detects ChatGPT export format and shows 'conversations' count instead of 'posts'"
+        ]
+      }
+    ]
+  },
+  {
     "date": "March 3, 2026",
     "version": "0.15.1",
     "entries": [

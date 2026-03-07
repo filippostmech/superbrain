@@ -5,8 +5,8 @@
 <h1 align="center">superBrain</h1>
 
 <p align="center">
-  <strong>Your LinkedIn & Substack Second Brain</strong><br />
-  Save, organize, and search your favorite professional content with AI.
+  <strong>Your LinkedIn, Substack & ChatGPT Second Brain</strong><br />
+  Save, organize, and search your favorite professional content and AI conversations.
 </p>
 
 <p align="center">
@@ -25,15 +25,15 @@
 
 ## What is superBrain?
 
-superBrain is an open-source web app that acts as a personal knowledge base for your professional reading. Stop losing valuable insights from LinkedIn posts and Substack articles — save them in one place, organize with tags and collections, and use AI-powered search to find exactly what you need.
+superBrain is an open-source web app that acts as a personal knowledge base for your professional reading and AI conversations. Stop losing valuable insights from LinkedIn posts, Substack articles, and ChatGPT conversations — save them in one place, organize with tags and collections, and use AI-powered search to find exactly what you need.
 
 ## Features
 
 - **Save Posts** — Manually create entries or paste a URL to auto-scrape content, images, and author info
 - **URL Scraping** — Smart extraction for LinkedIn, Substack (including custom domains), and generic URLs with SSRF protection (protocol allowlisting, private IP blocking, per-hop redirect validation)
 - **Post Enrichment** — Re-scrape original URLs to fill in missing images, author info, and content for bulk-imported posts. Enrich one post at a time or hit "Enrich All" to process every unenriched post in one click
-- **Bulk Import** — Upload CSV or JSON files to import many posts at once, including LinkedIn's native CSV export format
-- **Chrome Extension** — Save posts directly from LinkedIn and Substack with one click
+- **Bulk Import** — Upload CSV or JSON files to import many posts at once, including LinkedIn's native CSV export and ChatGPT's official data export (`conversations.json`)
+- **Chrome Extension** — Save posts from LinkedIn and ChatGPT conversations directly from your browser with one click
 - **Tags & Collections** — Organize posts with tags and named collections, filter by either on the dashboard
 - **AI Search** — Ask natural language questions about your saved content using semantic search
 - **Grid & List Views** — Toggle between card grid and compact list layouts
@@ -42,7 +42,7 @@ superBrain is an open-source web app that acts as a personal knowledge base for 
 - **Collapsible Sidebar Navigation** — Shared left sidebar across all authenticated pages collapses to an icon rail on desktop and a slide-out sheet on mobile
 - **Mobile Responsive** — Fully usable on phones and small tablets with adaptive layouts, touch-friendly controls, and adaptive sidebar
 - **Export** — Download your posts as CSV or Markdown files, with current filters (favorites, tags, collections, platform) applied
-- **Platform Badges** — Color-coded badges for LinkedIn (blue), Substack (orange), and other sources
+- **Platform Badges** — Color-coded badges for LinkedIn (blue), Substack (orange), ChatGPT (green), and other sources
 - **Knowledge Graph** — AI-powered entity extraction that maps people, companies, topics, and technologies from your posts into an interactive force-directed graph visualization with search, filtering, and relationship exploration
 - **Public REST API** — Programmatic access to your data via API keys with rate limiting (100 req/min)
 
@@ -122,12 +122,15 @@ mcp/                     MCP Server (AI agent integration)
 
 ## Chrome Extension
 
-The Chrome extension lets you save posts directly from LinkedIn and Substack pages.
+The Chrome extension lets you save content directly from LinkedIn and ChatGPT pages.
 
 1. Open Chrome and go to `chrome://extensions/`
 2. Enable **Developer mode**
 3. Click **Load unpacked** and select the `client/public/extension/` folder
-4. "Save to superBrain" buttons will appear on LinkedIn post pages
+4. On **LinkedIn**: "Save to superBrain" buttons appear on feed posts
+5. On **ChatGPT**: A floating "Save to superBrain" button appears on conversation and shared link pages, capturing the full Q&A exchange
+
+**Tip:** You can also bulk-import all your ChatGPT conversations at once — go to ChatGPT Settings > Data Controls > Export Data, then upload the `conversations.json` file using the Bulk Import feature in your Library.
 
 ## MCP Server (AI Agent Integration)
 
@@ -209,6 +212,7 @@ Please make sure your code follows the existing style and includes relevant test
 | Done | Post enrichment — re-scrape URLs to fill missing images, author info, and content (single + bulk) |
 | Done | SSRF protection — URL validation with protocol allowlisting, private IP blocking, and per-hop redirect validation |
 | Done | Collapsible sidebar navigation — shared layout with icon rail on desktop and slide-out sheet on mobile |
+| Done | ChatGPT support — save conversations via Chrome Extension or bulk import from official data export |
 | Planned | AI auto-tagging on save |
 | Planned | AI-generated post summaries |
 | Planned | Related posts suggestions |

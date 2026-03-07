@@ -14,6 +14,7 @@ interface ParsedPost {
   authorUrl?: string;
   publishedAt?: string;
   tags?: string[];
+  platform?: string;
 }
 
 function parseCSVRows(text: string): string[][] {
@@ -88,6 +89,104 @@ function parseCSV(text: string): ParsedPost[] {
   return posts;
 }
 
+function parseChatGPTExport(text: string): ParsedPost[] {
+  try {
+    const data = JSON.parse(text);
+    if (!Array.isArray(data)) return [];
+
+    const hasMapping = data.some((item: any) => item.mapping && item.title !== undefined);
+    if (!hasMapping) return [];
+
+    const posts: ParsedPost[] = [];
+
+    for (const conversation of data) {
+      if (!conversation.mapping || !conversation.title) continue;
+
+      const messages: string[] = [];
+      const nodes = Object.values(conversation.mapping) as any[];
+
+      const orderedNodes: any[] = [];
+      const childrenMap = new Map<string, string[]>();
+      let rootId: string | null = null;
+
+      for (const node of nodes) {
+        const id = (node as any).id as string;
+        if (node.parent === null || node.parent === undefined) {
+          rootId = id;
+        }
+        if (node.children) {
+          childrenMap.set(id, node.children);
+        }
+      }
+
+      const nodeMap = new Map<string, any>();
+      for (const node of nodes) {
+        nodeMap.set((node as any).id, node);
+      }
+
+      const traverse = (nodeId: string): void => {
+        const node = nodeMap.get(nodeId);
+        if (!node) return;
+        orderedNodes.push(node);
+        const children = node.children || [];
+        for (const childId of children) {
+          traverse(childId);
+        }
+      };
+
+      if (rootId) {
+        traverse(rootId);
+      } else {
+        orderedNodes.push(...nodes);
+      }
+
+      for (const node of orderedNodes) {
+        const msg = node.message;
+        if (!msg || !msg.content || !msg.content.parts) continue;
+
+        const role = msg.author?.role;
+        if (role === "system") continue;
+
+        const parts = msg.content.parts
+          .filter((p: any) => typeof p === "string")
+          .join("\n")
+          .trim();
+
+        if (!parts) continue;
+
+        if (role === "user") {
+          messages.push(`**User:** ${parts}`);
+        } else if (role === "assistant") {
+          messages.push(`**ChatGPT:** ${parts}`);
+        } else if (role === "tool") {
+          continue;
+        } else {
+          messages.push(parts);
+        }
+      }
+
+      if (messages.length === 0) continue;
+
+      const content = `# ${conversation.title}\n\n${messages.join("\n\n")}`;
+      const publishedAt = conversation.create_time
+        ? new Date(conversation.create_time * 1000).toISOString()
+        : undefined;
+
+      posts.push({
+        content,
+        authorName: "ChatGPT conversation",
+        publishedAt,
+        tags: [conversation.title],
+        platform: "chatgpt",
+      });
+    }
+
+    return posts;
+  } catch {
+    return [];
+  }
+}
+
 function parseJSON(text: string): ParsedPost[] {
   try {
     const data = JSON.parse(text);
@@ -125,7 +224,10 @@ export function BulkImportDialog() {
       let posts: ParsedPost[] = [];
 
       if (file.name.endsWith(".json")) {
-        posts = parseJSON(text);
+        posts = parseChatGPTExport(text);
+        if (posts.length === 0) {
+          posts = parseJSON(text);
+        }
       } else if (file.name.endsWith(".csv")) {
         posts = parseCSV(text);
       } else {
@@ -150,7 +252,10 @@ export function BulkImportDialog() {
 
     let posts: ParsedPost[] = [];
     try {
-      posts = parseJSON(pasteContent);
+      posts = parseChatGPTExport(pasteContent);
+      if (posts.length === 0) {
+        posts = parseJSON(pasteContent);
+      }
     } catch {
       // not JSON
     }
@@ -207,7 +312,7 @@ export function BulkImportDialog() {
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-primary">Bulk Import</DialogTitle>
           <DialogDescription>
-            Upload a CSV or JSON file exported from LinkedIn, or paste content directly.
+            Upload a CSV or JSON file exported from LinkedIn, a ChatGPT conversations export, or paste content directly.
           </DialogDescription>
         </DialogHeader>
 
@@ -229,7 +334,7 @@ export function BulkImportDialog() {
             >
               <FileText className="w-6 h-6 text-muted-foreground" />
               <span className="text-sm text-muted-foreground">
-                {fileName || "Click to upload CSV, JSON, or TXT file"}
+                {fileName || "Click to upload CSV, JSON, TXT, or ChatGPT export file"}
               </span>
             </Button>
           </div>
@@ -242,7 +347,7 @@ export function BulkImportDialog() {
 
           <Textarea
             data-testid="textarea-paste-content"
-            placeholder="Paste CSV, JSON, or one post per line..."
+            placeholder="Paste CSV, JSON, ChatGPT export, or one post per line..."
             value={pasteContent}
             onChange={(e) => setPasteContent(e.target.value)}
             className="min-h-[120px] resize-none rounded-xl text-sm"
@@ -266,7 +371,7 @@ export function BulkImportDialog() {
               </div>
               <div>
                 <p className="font-medium text-sm" data-testid="text-parsed-count">
-                  {parsedPosts.length} post{parsedPosts.length !== 1 ? "s" : ""} ready to import
+                  {parsedPosts.length} {parsedPosts.some(p => p.platform === "chatgpt") ? "conversation" : "post"}{parsedPosts.length !== 1 ? "s" : ""} ready to import
                 </p>
                 <p className="text-xs text-muted-foreground">
                   Duplicates will be automatically skipped

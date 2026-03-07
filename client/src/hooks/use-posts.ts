@@ -133,6 +133,7 @@ export function useBulkImport() {
       authorUrl?: string;
       publishedAt?: string;
       tags?: string[];
+      platform?: string;
     }>) => {
       const res = await fetch(api.posts.bulkImport.path, {
         method: api.posts.bulkImport.method,

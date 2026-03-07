@@ -88,6 +88,7 @@ export const api = {
           authorUrl: z.string().optional(),
           publishedAt: z.string().optional(),
           tags: z.array(z.string()).optional(),
+          platform: z.string().optional(),
         })),
       }),
       responses: {
@@ -108,6 +109,7 @@ export const api = {
           authorName: z.string().optional(),
           authorUrl: z.string().optional(),
           publishedAt: z.string().optional(),
+          platform: z.string().optional(),
         })),
       }),
       responses: {
