@@ -1,24 +1,30 @@
 <p align="center">
-  <img src="assets/logo.png" alt="superBrain logo" width="80" />
+  <img src="assets/logo.png" alt="superBrain logo" width="140" style="border-radius: 50%;" />
 </p>
 
 <h1 align="center">superBrain</h1>
 
 <p align="center">
-  <strong>Your LinkedIn, Substack & ChatGPT Second Brain</strong><br />
-  Save, organize, and search your favorite professional content and AI conversations.
+  <strong>A second brain for LinkedIn, Substack & ChatGPT</strong><br />
+  Save, organize, and search your favorite professional content and AI conversations —<br />
+  with tags, collections, knowledge graphs, and AI-powered semantic search, all backed by PostgreSQL.
 </p>
 
 <p align="center">
   <a href="https://super-brain.app">Live App</a> &middot;
   <a href="#features">Features</a> &middot;
   <a href="#getting-started">Get Started</a> &middot;
+  <a href="#tech-stack">Tech Stack</a> &middot;
+  <a href="#mcp-server-ai-agent-integration">API Reference</a> &middot;
   <a href="#contributing">Contributing</a> &middot;
   <a href="#roadmap">Roadmap</a>
 </p>
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License" /></a>
+  <img src="https://img.shields.io/badge/TypeScript-5.6-blue.svg" alt="TypeScript 5.6" />
+  <img src="https://img.shields.io/badge/React-18-61dafb.svg" alt="React 18" />
+  <img src="https://img.shields.io/badge/PostgreSQL-14%2B-336791.svg" alt="PostgreSQL 14+" />
 </p>
 
 ---

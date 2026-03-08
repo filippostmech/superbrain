@@ -81,9 +81,7 @@ export default function LandingPage() {
             transition={{ duration: 0.6 }}
           >
             <div className="flex items-center gap-2 mb-8">
-              <div className="bg-primary p-2 rounded-lg">
-                <Bookmark className="w-6 h-6 text-white" />
-              </div>
+              <img src="/logo.png" alt="superBrain" className="w-14 h-14 rounded-full" data-testid="img-logo-header" />
               <span className="text-xl font-bold tracking-tight text-foreground">superBrain</span>
               <div className="ml-auto">
                 <Button variant="ghost" size="icon" onClick={toggleTheme} data-testid="button-theme-toggle">

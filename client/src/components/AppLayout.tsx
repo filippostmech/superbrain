@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  Bookmark,
   LayoutDashboard,
   BookOpen,
   Network,
@@ -168,7 +167,7 @@ function AppLayoutInner({ children, headerContent }: { children: React.ReactNode
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton tooltip="superBrain" onClick={handleLogoClick}>
-                <Bookmark className="size-4 text-primary" />
+                <img src="/logo.png" alt="superBrain" className="size-4 rounded-full shrink-0 object-contain" />
                 <span className="truncate font-bold">superBrain</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
